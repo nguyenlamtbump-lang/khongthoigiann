@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Giao diện · Olympia Online</title>
+<!-- ============================================================================
+  giaodien.html — KHO GIAO DIỆN cho index.html, do admin.html kiểm soát.
+  • index.html tải file này, lấy khối <style data-theme-id="..."> của giao diện mà admin đã cấp cho
+    tài khoản (Toàn hệ thống / Admin / KDV / Premium) rồi gắn vào trang (html[data-chat-theme]).
+  • admin.html (mục "Giao diện") đọc #theme-registry bên dưới để liệt kê, xem trước (iframe) và cấp quyền.
+  • Mở trực tiếp file này = trang xem trước. Thêm giao diện mới: thêm 1 mục vào #theme-registry
+    (nhớ điền "group": "bubble" = Bong bóng tin nhắn, hoặc "frame" = Toàn khung chat — mỗi tài khoản chọn được
+    ĐỒNG THỜI 1 giao diện mỗi nhóm; khung nạp trước, bong bóng nạp sau nên bong bóng thắng khi trùng luật)
+    rồi viết CSS theo HAI phạm vi (khối nào không cần thì bỏ):
+      1) <style data-theme-id="id-moi">  — giao diện CỦA RIÊNG người được cấp (khung chat, ô nhập, bong bóng tin
+         người khác… ). Mọi luật phải bắt đầu bằng html[data-chat-theme~="id-moi"] (dùng ~= vì khi ghép đôi thuộc tính chứa 2 id). Chỉ máy người được cấp nạp khối này.
+      2) <style data-fx-id="id-moi">     — HIỆU ỨNG TRÊN TIN NHẮN của người được cấp: MỌI NGƯỜI đều thấy (kể cả người
+         chưa được cấp). index.html gắn thuộc tính data-fx="id-moi" lên từng tin (.lc2-msg ở Trò chuyện chung,
+         .lc-group ở chat phòng chờ) của người đang dùng giao diện đó. Luật viết dạng
+         html body #lnkChatModal .lc2-msg[data-fx="id-moi"] .lc2-b  và  html body .lc-group[data-fx="id-moi"] .lc-b
+         (data-fx chỉ mang MỘT id: bong bóng nếu người gửi chọn, không thì khung) và phải TỰ ĐỦ (không dựa vào CSS của khối 1), vì người xem có thể đang dùng giao diện khác.
+============================================================================ -->
+<script type="application/json" id="theme-registry">
+[{"id":"song-nuoc","name":"Sóng nước · Bong bóng tin nhắn","scope":"Giao diện tin nhắn (bong bóng)","version":6,
+  "desc":"Bong bóng tin nhắn chủ đề sóng nước: tin gửi đi là nước xanh sâu có ánh kính, bọt khí lấp lánh, hai lớp sóng viền bọt trắng trôi ở đáy và lan hai vòng gợn khi vừa gửi; tin nhận là kính trong ánh xanh ngọc với sóng tĩnh. Không đổi khung chat. Mọi người đều thấy hiệu ứng trên tin của người dùng giao diện này.",
+  "swatch":["#075985","#0284c7","#22d3ee","#bdeefa","#effcff"],"group":"bubble"},
+ {"id":"song-nuoc-khung","name":"Sóng nước · Toàn khung chat","scope":"Giao diện tin nhắn (cả khung chat)","version":4,
+  "desc":"Đổi cả khung chat sang chủ đề đại dương: nền xanh biển sâu, sóng nước chuyển động ở mép khung, ô nhập và nút gửi dạng bọt nước, bong bóng tin nhắn trong. Áp dụng cho Trò chuyện chung và chat phòng chờ. Bong bóng tin của người dùng giao diện này hiện cho mọi người cùng thấy.",
+  "swatch":["#052e4a","#0a5c82","#06b6d4","#67e8f9","#f0fdff"],"group":"frame"},
+ {"id":"bau-troi-may","name":"Bầu trời mây · Bong bóng tin nhắn","scope":"Giao diện tin nhắn (bong bóng)","version":3,
+  "desc":"Bong bóng tin nhắn chủ đề bầu trời mây: tin gửi đi là trời xanh chuyển sắc về chân trời, mặt trời có quầng sáng mềm ở góc, hai tầng mây có bóng đổ trôi chậm ở đáy và nảy phồng như làn mây khi vừa gửi; tin nhận là bong bóng trắng mát với mây xanh nhạt tĩnh. Không đổi khung chat. Mọi người đều thấy hiệu ứng trên tin của người dùng giao diện này.",
+  "swatch":["#1e5fae","#2f7fe0","#7cc4ff","#cfe8ff","#ffffff"],"group":"bubble"},
+ {"id":"bau-troi-may-khung","name":"Bầu trời mây · Toàn khung chat","scope":"Giao diện tin nhắn (cả khung chat)","version":2,
+  "desc":"Đổi cả khung chat sang chủ đề bầu trời mây: tiêu đề và thanh bên màu trời xanh, vùng tin nhắn là nền trời với hai lớp mây trôi chậm, ô nhập và nút gửi bo tròn dạng mây, bong bóng tin nhắn trắng mát. Áp dụng cho Trò chuyện chung và chat phòng chờ. Bong bóng tin của người dùng giao diện này hiện cho mọi người cùng thấy.",
+  "swatch":["#174a8b","#2f7fe0","#7cc4ff","#cfe8ff","#f6fbff"],"group":"frame"},
+ {"id":"mu-rom","name":"Mũ Rơm · Bong bóng tin nhắn","scope":"Giao diện tin nhắn (bong bóng)","group":"bubble","version":12,
+  "desc":"Bong bóng Mũ Rơm: tin gửi đi đỏ như áo vest thuyền trưởng, viền trắng-vàng, chiếc mũ rơm đội ở góc trên bên phải, vòng mây trắng bồng bềnh bao quanh tin nhắn và nảy giãn như cao su khi vừa gửi; tin nhận là giấy da kem viền đai vàng. Không đổi khung chat. Mọi người đều thấy hiệu ứng trên tin của người dùng giao diện này.",
+  "swatch":["#7f0f1b","#e02b40","#f6c744","#fde08a","#fff7e0"]},
+ {"id":"mu-rom-khung","name":"Mũ Rơm · Toàn khung chat","scope":"Giao diện tin nhắn (cả khung chat)","group":"frame","version":13,
+  "desc":"Cả khung chat chủ đề thuyền trưởng Mũ Rơm: tiêu đề đỏ có tia nắng xoay quanh biểu tượng mũ rơm, viền vàng, thanh bên xanh hải trình, vùng chat là tấm giấy da có dây thừng và tia bùng nổ ở góc, nút gửi tròn giãn nảy như cao su. Bong bóng tin gửi đi đỏ có mũ rơm ở góc phải, vòng mây trắng bao quanh, hiện cho mọi người cùng thấy. Áp dụng cho Trò chuyện chung và chat phòng chờ.",
+  "swatch":["#091c3a","#b3121f","#f6c744","#fdeebb","#fff9e5"]}]
+</script>
+
+<style data-theme-id="song-nuoc">
+html[data-chat-theme~="song-nuoc"]{--sn-tf:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 14'%3E%3Cpath d='M0 7C13.3 1 26.7 1 40 7S66.7 13 80 7V14H0Z' fill='%2322d3ee' fill-opacity='.26'/%3E%3Cpath d='M-80 7C-66.7 1 -53.3 1 -40 7S-13.3 13 0 7C13.3 1 26.7 1 40 7S66.7 13 80 7C93.3 1 106.7 1 120 7S146.7 13 160 7' fill='none' stroke='%230ea5c4' stroke-opacity='.5' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E");--sn-tb:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 16'%3E%3Cpath d='M0 7C18.7 2 37.3 2 56 7S93.3 12 112 7V16H0Z' fill='%230284c7' fill-opacity='.10'/%3E%3Cpath d='M-112 7C-93.3 2 -74.7 2 -56 7S-18.7 12 0 7C18.7 2 37.3 2 56 7S93.3 12 112 7C130.7 2 149.3 2 168 7S205.3 12 224 7' fill='none' stroke='%230284c7' stroke-opacity='.25' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");}
+
+/* ===== Bong bóng tin nhắn: Trò chuyện chung (.lc2-b) và chat phòng chờ (.lc-b) ===== */
+html[data-chat-theme~="song-nuoc"] #lnkChatModal .lc2-b,html[data-chat-theme~="song-nuoc"] .lc-group .lc-b{position:relative;overflow:hidden;isolation:isolate;display:block;width:fit-content;max-width:100%;padding:8px 14px 18px;color:#0b3a52;border:1px solid #c3ecf8;
+ background:radial-gradient(circle at calc(100% - 15px) 13px,rgba(34,211,238,.10) 0 3.0px,rgba(34,211,238,.6) 3.4px 4.2px,transparent 4.8px),
+  radial-gradient(circle at calc(100% - 27px) 22px,rgba(34,211,238,.08) 0 1.6px,rgba(34,211,238,.48) 2.0px 2.8px,transparent 3.4px),
+  linear-gradient(180deg,#ffffff 0%,#ecfbff 100%);
+ box-shadow:0 8px 16px -12px rgba(8,145,178,.65),inset 0 1px 0 #fff;}
+html[data-chat-theme~="song-nuoc"] #lnkChatModal .lc2-b{border-radius:4px 18px 18px 18px;}
+html[data-chat-theme~="song-nuoc"] #lnkChatModal .lc2-msg:not(.first) .lc2-b{border-top-left-radius:18px;}
+html[data-chat-theme~="song-nuoc"] .lc-group .lc-b{border-radius:18px;}
+html[data-chat-theme~="song-nuoc"] .lc-group.other .lc-b:first-of-type{border-top-left-radius:6px;}
+
+/* Hai lớp sóng tĩnh ở đáy (có đường bọt ở đỉnh sóng) */
+html[data-chat-theme~="song-nuoc"] #lnkChatModal .lc2-b::before,html[data-chat-theme~="song-nuoc"] #lnkChatModal .lc2-b::after,html[data-chat-theme~="song-nuoc"] .lc-group .lc-b::before,html[data-chat-theme~="song-nuoc"] .lc-group .lc-b::after{content:"";position:absolute;left:0;z-index:-1;width:calc(100% + 160px);pointer-events:none;background-repeat:repeat-x;}
+html[data-chat-theme~="song-nuoc"] #lnkChatModal .lc2-b::after,html[data-chat-theme~="song-nuoc"] .lc-group .lc-b::after{bottom:0;height:14px;background-image:var(--sn-tf);background-size:80px 14px;}
+html[data-chat-theme~="song-nuoc"] #lnkChatModal .lc2-b::before,html[data-chat-theme~="song-nuoc"] .lc-group .lc-b::before{bottom:0;height:16px;background-image:var(--sn-tb);background-size:112px 16px;}
+/* Bong bóng "tin gửi đi" (nước xanh, bọt khí, sóng chuyển động) nằm ở khối data-fx-id="song-nuoc" bên dưới để mọi người cùng thấy. */
+
+/* ===== v6 nâng cấp: kính trong ánh xanh ngọc, vệt sáng ===== */
+html[data-chat-theme~="song-nuoc"] #lnkChatModal .lc2-b,html[data-chat-theme~="song-nuoc"] .lc-group .lc-b{border-color:#b2e7f5;background:radial-gradient(120% 90% at 0 0,rgba(255,255,255,.95),transparent 55%),radial-gradient(circle at calc(100% - 15px) 13px,rgba(34,211,238,.1) 0 3px,rgba(34,211,238,.6) 3.4px 4.2px,transparent 4.8px),radial-gradient(circle at calc(100% - 27px) 22px,rgba(34,211,238,.08) 0 1.6px,rgba(34,211,238,.48) 2px 2.8px,transparent 3.4px),linear-gradient(180deg,#fbfeff,#d9f5fc);box-shadow:0 10px 20px -14px rgba(8,145,178,.85),inset 0 1px 0 #fff,inset 0 -10px 14px -12px rgba(14,165,233,.4);}
+</style>
+
+<style data-theme-id="song-nuoc-khung">
+html[data-chat-theme~="song-nuoc-khung"]{--sn-wave:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 24' preserveAspectRatio='none'%3E%3Cpath d='M0 12Q75 0 150 12T300 12T450 12T600 12V24H0Z' fill='%23f0fdff'/%3E%3C/svg%3E");
+ --sn-wave2:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 24' preserveAspectRatio='none'%3E%3Cpath d='M0 12Q75 0 150 12T300 12T450 12T600 12V24H0Z' fill='%2367e8f9' fill-opacity='.55'/%3E%3C/svg%3E");
+ --sn-line:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='8'%3E%3Cpath d='M0 4Q5 0 10 4T20 4' fill='none' stroke='%237dd3fc' stroke-width='1.5'/%3E%3C/svg%3E");}
+
+/* ---------- Trò chuyện chung (cửa sổ #lnkChatModal) ---------- */
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lnk-box{background:#06324a;box-shadow:0 34px 80px -24px rgba(3,30,48,.75),0 0 0 1px rgba(103,232,249,.18);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lnk-box header{background:linear-gradient(180deg,#0b6a8f,#0a5c82);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lnk-box header h3{color:#fff;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .hd-tx small{color:#a5f3fc;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .hd-ic{border-radius:50%;background:linear-gradient(145deg,#67e8f9,#0ea5e9);color:#032a40;box-shadow:0 0 0 4px rgba(103,232,249,.22);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lnk-box header button{background:rgba(255,255,255,.12);color:#e0fbff;border-radius:50%;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lnk-box header button:hover{background:rgba(255,255,255,.26);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-wrap{background:linear-gradient(180deg,#0a5c82,#06324a);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-sh{color:#7cc7dc;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-ch{color:#a5e4f3;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-ch:hover{background:rgba(255,255,255,.09);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-ch.on{background:rgba(103,232,249,.18);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-ch .unr{background:#22d3ee;box-shadow:0 0 0 3px rgba(34,211,238,.3);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-me{background:rgba(255,255,255,.08);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-me .av{border-radius:50%;background:linear-gradient(135deg,#22d3ee,#0284c7);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-main{position:relative;overflow:visible;border-radius:0;background:radial-gradient(circle at 10% 90%,rgba(34,211,238,.13) 0 46px,transparent 47px),radial-gradient(circle at 92% 24%,rgba(14,165,233,.10) 0 78px,transparent 79px),radial-gradient(circle at 70% 78%,rgba(103,232,249,.16) 0 22px,transparent 23px),linear-gradient(180deg,#f0fdff,#dff6fd);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-main::before{content:"";position:absolute;left:0;right:0;top:-13px;height:14px;z-index:3;pointer-events:none;background-image:var(--sn-wave),var(--sn-wave2);background-repeat:repeat-x;background-size:600px 14px,400px 14px;background-position:0 100%,0 100%;animation:snWave 9s linear infinite;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal #lnkChatList.lc2-body{background:transparent;padding-top:12px;scrollbar-color:#7dd3fc transparent;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-day{color:#4b9bb5;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-day::before,html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-day::after{height:8px;background:var(--sn-line) repeat-x center;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-msg:hover{background:rgba(14,165,233,.06);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-msg.me,html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-msg.me:hover{background:transparent;box-shadow:none;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-av{border-radius:50%;background:hsl(calc(165 + var(--h)*.16) 60% 38%);box-shadow:0 0 0 3px #fff,0 6px 14px -6px rgba(8,145,178,.7);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-name{color:hsl(calc(165 + var(--h)*.16) 62% 26%);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-tag{background:#cffafe;color:#0e7490;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-meta time,html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-gt{color:#6aa9bd;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-b{display:block;width:fit-content;max-width:100%;padding:8px 14px;color:#0c3b52;background:#fff;border:1px solid #bdeefa;border-radius:4px 18px 18px 18px;box-shadow:0 6px 14px -10px rgba(8,145,178,.6);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-msg:not(.first) .lc2-b{border-top-left-radius:18px;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-flag{background:#fff;color:#7fb4c4;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-empty-ic{color:#0891b2;background:#cffafe;border-radius:50%;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-empty b{color:#0c4a6e;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-empty span{color:#5b9bb0;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-foot{background:#dff6fd;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-compose{background:#fff;border:1.5px solid #a5eaf7;border-radius:999px;padding:6px 6px 6px 18px;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-compose:focus-within{background:#fff;border-color:#06b6d4;box-shadow:0 0 0 4px rgba(6,182,212,.2);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-compose textarea{color:#0c3b52;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-compose textarea::placeholder,html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-hint,html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-count{color:#7fb4c4;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-send{border-radius:50%;color:#fff;background:linear-gradient(145deg,#22d3ee,#0284c7);box-shadow:0 8px 16px -8px rgba(2,132,199,.9);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-send:hover:not(:disabled){animation:snRipple 1.3s ease-out infinite;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-send:disabled{background:#cfeaf2;color:#7fb4c4;box-shadow:none;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-new{background:linear-gradient(135deg,#0a5c82,#0369a1);box-shadow:0 10px 24px -8px rgba(3,45,72,.75);}
+
+/* ---------- Chat phòng chờ ---------- */
+html[data-chat-theme~="song-nuoc-khung"] .lobby-log-panel{background:linear-gradient(180deg,#f0fdff,#dff6fd);scrollbar-color:#7dd3fc transparent;}
+html[data-chat-theme~="song-nuoc-khung"] .lc-head{background:rgba(240,253,255,.92);border-bottom:1px solid #bdeefa;}
+html[data-chat-theme~="song-nuoc-khung"] .lc-title{color:#0e7490;}
+html[data-chat-theme~="song-nuoc-khung"] .lc-dot{background:#06b6d4;box-shadow:0 0 0 4px rgba(6,182,212,.2);animation:snRipple 2.2s ease-out infinite;}
+html[data-chat-theme~="song-nuoc-khung"] .lc-sub{color:#5b9bb0;}
+html[data-chat-theme~="song-nuoc-khung"] .lc-sys{background:#d3f4fb;color:#0e7490;}
+html[data-chat-theme~="song-nuoc-khung"] .lc-sys time{color:#38bdf8;}
+html[data-chat-theme~="song-nuoc-khung"] .lc-av{background:hsl(calc(165 + var(--h)*.16) 60% 40%);box-shadow:0 6px 14px -6px rgba(8,145,178,.7);}
+html[data-chat-theme~="song-nuoc-khung"] .lc-name{color:#0e7490;}
+html[data-chat-theme~="song-nuoc-khung"] .lc-name em,html[data-chat-theme~="song-nuoc-khung"] .lc-col time{color:#6aa9bd;}
+html[data-chat-theme~="song-nuoc-khung"] .lc-group .lc-b{background:#fff;border-color:#bdeefa;color:#0c3b52;box-shadow:0 4px 12px -8px rgba(8,145,178,.6);}
+html[data-chat-theme~="song-nuoc-khung"] .lc-empty{color:#5b9bb0;}
+html[data-chat-theme~="song-nuoc-khung"] .lc-new{background:#0a5c82;}
+html[data-chat-theme~="song-nuoc-khung"] .lobby-chat-input-row{background:#fff;border:1.5px solid #a5eaf7 !important;border-radius:999px !important;}
+html[data-chat-theme~="song-nuoc-khung"] .lobby-chat-input-row:focus-within{border-color:#06b6d4 !important;box-shadow:0 0 0 4px rgba(6,182,212,.2) !important;}
+html[data-chat-theme~="song-nuoc-khung"] .lobby-chat-input-row input{color:#0c3b52;}
+html[data-chat-theme~="song-nuoc-khung"] .lobby-chat-input-row input::placeholder{color:#7fb4c4;}
+html[data-chat-theme~="song-nuoc-khung"] .lobby-chat-input-row .icon-btn{background:linear-gradient(145deg,#22d3ee,#0284c7) !important;border-radius:50% !important;color:#fff;}
+
+@keyframes snWave{to{background-position:600px 100%,-400px 100%;}}
+@keyframes snRipple{0%{box-shadow:0 0 0 0 rgba(34,211,238,.55);}100%{box-shadow:0 0 0 12px rgba(34,211,238,0);}}
+@media (prefers-reduced-motion:reduce){html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-main::before,html[data-chat-theme~="song-nuoc-khung"] .lc-dot,html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-send:hover{animation:none !important;}}
+
+/* ===== v4 nâng cấp: tia sáng dưới nước trôi chậm, kính mờ cho bong bóng ===== */
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lnk-box header{background:linear-gradient(180deg,#0e7aa3,#0a5c82 70%,#094c6e);box-shadow:0 8px 20px -10px rgba(2,30,50,.7);}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-main::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.75;background:radial-gradient(ellipse 120px 60px at 12% 20%,rgba(255,255,255,.55),transparent 70%),radial-gradient(ellipse 160px 70px at 38% 62%,rgba(103,232,249,.3),transparent 70%),radial-gradient(ellipse 130px 60px at 64% 28%,rgba(255,255,255,.5),transparent 70%),radial-gradient(ellipse 170px 80px at 86% 74%,rgba(56,189,248,.24),transparent 70%);background-size:200% 100%;animation:snCaustic 26s ease-in-out infinite alternate;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal #lnkChatList.lc2-body{position:relative;z-index:1;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-b,html[data-chat-theme~="song-nuoc-khung"] .lc-group .lc-b{background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-color:#b3ecf8;box-shadow:0 10px 20px -14px rgba(8,145,178,.8),inset 0 1px 0 #fff;}
+html[data-chat-theme~="song-nuoc-khung"] .lobby-log-panel{background:radial-gradient(circle at 12% 88%,rgba(255,255,255,.75) 0 6px,transparent 7px),radial-gradient(circle at 88% 30%,rgba(34,211,238,.18) 0 40px,transparent 41px),radial-gradient(circle at 70% 80%,rgba(14,165,233,.12) 0 60px,transparent 61px),linear-gradient(180deg,#f2fdff,#d8f3fc) local;}
+html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc2-compose,html[data-chat-theme~="song-nuoc-khung"] .lobby-chat-input-row{box-shadow:0 10px 22px -14px rgba(8,145,178,.7);}
+@keyframes snCaustic{from{background-position:0 0;}to{background-position:100% 0;}}
+@media (prefers-reduced-motion:reduce){html[data-chat-theme~="song-nuoc-khung"] #lnkChatModal .lc3-main::after{animation:none !important;}}
+</style>
+
+
+<style data-theme-id="bau-troi-may">
+html[data-chat-theme~="bau-troi-may"]{--bt-tf:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 22' width='150' height='22'%3E%3Cdefs%3E%3ClinearGradient id='g' gradientUnits='userSpaceOnUse' x1='0' y1='0' x2='0' y2='22'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='1' stop-color='%23c9e1fa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='url(%23g)' fill-opacity='.85'%3E%3Ccircle cx='18' cy='15' r='7'/%3E%3Ccircle cx='30' cy='11' r='10'/%3E%3Ccircle cx='44' cy='14' r='8'/%3E%3Ccircle cx='54' cy='16.5' r='5.5'/%3E%3Crect x='11' y='15' width='49' height='7' rx='3.5'/%3E%3Ccircle cx='80' cy='17' r='5'/%3E%3Ccircle cx='90' cy='13' r='8'/%3E%3Ccircle cx='102' cy='16' r='6'/%3E%3Crect x='75' y='16' width='33' height='6' rx='3'/%3E%3Ccircle cx='127' cy='18' r='4'/%3E%3Ccircle cx='135' cy='15' r='7'/%3E%3Ccircle cx='143' cy='18' r='4'/%3E%3Crect x='122' y='18' width='25' height='4' rx='2'/%3E%3C/g%3E%3C/svg%3E");--bt-tb:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 22' width='100' height='22'%3E%3Cg fill='%23b5d6f7' fill-opacity='.5'%3E%3Ccircle cx='16' cy='17' r='6'/%3E%3Ccircle cx='26' cy='13' r='9'/%3E%3Ccircle cx='37' cy='16' r='7'/%3E%3Crect x='11' y='16' width='33' height='6' rx='3'/%3E%3Ccircle cx='66' cy='18' r='5'/%3E%3Ccircle cx='76' cy='14' r='8'/%3E%3Ccircle cx='86' cy='17' r='6'/%3E%3Crect x='61' y='17' width='31' height='5' rx='2.5'/%3E%3C/g%3E%3C/svg%3E");}
+
+/* ===== Bong bóng tin nhắn: Trò chuyện chung (.lc2-b) và chat phòng chờ (.lc-b) ===== */
+html[data-chat-theme~="bau-troi-may"] #lnkChatModal .lc2-b,html[data-chat-theme~="bau-troi-may"] .lc-group .lc-b{position:relative;overflow:hidden;isolation:isolate;display:block;width:fit-content;max-width:100%;padding:8px 14px 20px;color:#1b3a5e;border:1px solid #d3e6fa;
+ background:radial-gradient(circle at calc(100% - 20px) 15px,rgba(255,226,140,.45) 0 2.6px,rgba(255,226,140,.16) 5px,transparent 12px),
+  linear-gradient(180deg,#ffffff 0%,#e8f3ff 100%);
+ box-shadow:0 8px 16px -12px rgba(47,127,224,.6),inset 0 1px 0 #fff;}
+html[data-chat-theme~="bau-troi-may"] #lnkChatModal .lc2-b{border-radius:4px 18px 18px 18px;}
+html[data-chat-theme~="bau-troi-may"] #lnkChatModal .lc2-msg:not(.first) .lc2-b{border-top-left-radius:18px;}
+html[data-chat-theme~="bau-troi-may"] .lc-group .lc-b{border-radius:18px;}
+html[data-chat-theme~="bau-troi-may"] .lc-group.other .lc-b:first-of-type{border-top-left-radius:6px;}
+
+/* Hai lớp mây xanh nhạt tĩnh ở đáy bong bóng (tin nhận) */
+html[data-chat-theme~="bau-troi-may"] #lnkChatModal .lc2-b::before,html[data-chat-theme~="bau-troi-may"] #lnkChatModal .lc2-b::after,html[data-chat-theme~="bau-troi-may"] .lc-group .lc-b::before,html[data-chat-theme~="bau-troi-may"] .lc-group .lc-b::after{content:"";position:absolute;left:0;z-index:-1;width:calc(100% + 160px);pointer-events:none;background-repeat:repeat-x;}
+html[data-chat-theme~="bau-troi-may"] #lnkChatModal .lc2-b::after,html[data-chat-theme~="bau-troi-may"] .lc-group .lc-b::after{bottom:0;height:22px;background-image:var(--bt-tf);background-size:150px 22px;}
+html[data-chat-theme~="bau-troi-may"] #lnkChatModal .lc2-b::before,html[data-chat-theme~="bau-troi-may"] .lc-group .lc-b::before{bottom:0;height:22px;background-image:var(--bt-tb);background-size:100px 22px;}
+/* Bong bóng "tin gửi đi" (trời xanh, nắng, mây trôi) nằm ở khối data-fx-id="bau-troi-may" bên dưới để mọi người cùng thấy. */
+
+/* ===== v3 nâng cấp: trắng mát, nắng ấm ở góc ===== */
+html[data-chat-theme~="bau-troi-may"] #lnkChatModal .lc2-b,html[data-chat-theme~="bau-troi-may"] .lc-group .lc-b{border-color:#cfe4fb;background:radial-gradient(circle at calc(100% - 20px) 15px,rgba(255,226,140,.5) 0 2.6px,rgba(255,226,140,.18) 5px,transparent 13px),radial-gradient(110% 80% at 0 0,rgba(255,255,255,.95),transparent 60%),linear-gradient(180deg,#fdfeff,#e2f0ff);box-shadow:0 10px 20px -14px rgba(47,127,224,.7),inset 0 1px 0 #fff;}
+</style>
+
+<style data-theme-id="bau-troi-may-khung">
+html[data-chat-theme~="bau-troi-may-khung"]{--btk-far:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 260' width='420' height='260'%3E%3Cg fill='%23fff' fill-opacity='0.5'%3E%3Ccircle cx='50.9' cy='55.8' r='4.9'/%3E%3Ccircle cx='60' cy='53.7' r='7'/%3E%3Ccircle cx='69.8' cy='55.8' r='5.6'/%3E%3Crect x='46' y='55.1' width='28.7' height='4.9' rx='2.45'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.5'%3E%3Ccircle cx='242.2' cy='114.4' r='4.2'/%3E%3Ccircle cx='250' cy='112.6' r='6'/%3E%3Ccircle cx='258.4' cy='114.4' r='4.8'/%3E%3Crect x='238' y='113.8' width='24.6' height='4.2' rx='2.1'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.5'%3E%3Ccircle cx='129.6' cy='209.2' r='5.6'/%3E%3Ccircle cx='140' cy='206.8' r='8'/%3E%3Ccircle cx='151.2' cy='209.2' r='6.4'/%3E%3Crect x='124' y='208.4' width='32.8' height='5.6' rx='2.8'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.5'%3E%3Ccircle cx='343.5' cy='41' r='3.5'/%3E%3Ccircle cx='350' cy='39.5' r='5'/%3E%3Ccircle cx='357' cy='41' r='4'/%3E%3Crect x='340' y='40.5' width='20.5' height='3.5' rx='1.75'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.5'%3E%3Ccircle cx='372.2' cy='242.4' r='4.2'/%3E%3Ccircle cx='380' cy='240.6' r='6'/%3E%3Ccircle cx='388.4' cy='242.4' r='4.8'/%3E%3Crect x='368' y='241.8' width='24.6' height='4.2' rx='2.1'/%3E%3C/g%3E%3C/svg%3E");--btk-near:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 560 340' width='560' height='340'%3E%3Cg fill='%23fff' fill-opacity='0.62'%3E%3Ccircle cx='90.5' cy='83' r='10.5'/%3E%3Ccircle cx='110' cy='78.5' r='15'/%3E%3Ccircle cx='131' cy='83' r='12'/%3E%3Crect x='80' y='81.5' width='61.5' height='10.5' rx='5.25'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.62'%3E%3Ccircle cx='413.1' cy='174.2' r='9.1'/%3E%3Ccircle cx='430' cy='170.3' r='13'/%3E%3Ccircle cx='448.2' cy='174.2' r='10.4'/%3E%3Crect x='404' y='172.9' width='53.3' height='9.1' rx='4.55'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.62'%3E%3Ccircle cx='229.2' cy='302.4' r='11.2'/%3E%3Ccircle cx='250' cy='297.6' r='16'/%3E%3Ccircle cx='272.4' cy='302.4' r='12.8'/%3E%3Crect x='218' y='300.8' width='65.6' height='11.2' rx='5.6'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.62'%3E%3Ccircle cx='508.3' cy='34.6' r='6.3'/%3E%3Ccircle cx='520' cy='31.9' r='9'/%3E%3Ccircle cx='532.6' cy='34.6' r='7.2'/%3E%3Crect x='502' y='33.7' width='36.9' height='6.3' rx='3.15'/%3E%3C/g%3E%3C/svg%3E");--btk-head:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 70' width='260' height='70'%3E%3Cg fill='%23fff' fill-opacity='0.24'%3E%3Ccircle cx='29.6' cy='35.2' r='5.6'/%3E%3Ccircle cx='40' cy='32.8' r='8'/%3E%3Ccircle cx='51.2' cy='35.2' r='6.4'/%3E%3Crect x='24' y='34.4' width='32.8' height='5.6' rx='2.8'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.24'%3E%3Ccircle cx='140.9' cy='57.8' r='4.9'/%3E%3Ccircle cx='150' cy='55.7' r='7'/%3E%3Ccircle cx='159.8' cy='57.8' r='5.6'/%3E%3Crect x='136' y='57.1' width='28.7' height='4.9' rx='2.45'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.24'%3E%3Ccircle cx='217.85' cy='26.7' r='3.85'/%3E%3Ccircle cx='225' cy='25.05' r='5.5'/%3E%3Ccircle cx='232.7' cy='26.7' r='4.4'/%3E%3Crect x='214' y='26.15' width='22.55' height='3.85' rx='1.93'/%3E%3C/g%3E%3C/svg%3E");--btk-lobby:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 230' width='360' height='230'%3E%3Cg fill='%23fff' fill-opacity='0.6'%3E%3Ccircle cx='58.3' cy='64.6' r='6.3'/%3E%3Ccircle cx='70' cy='61.9' r='9'/%3E%3Ccircle cx='82.6' cy='64.6' r='7.2'/%3E%3Crect x='52' y='63.7' width='36.9' height='6.3' rx='3.15'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.6'%3E%3Ccircle cx='259.6' cy='145.2' r='5.6'/%3E%3Ccircle cx='270' cy='142.8' r='8'/%3E%3Ccircle cx='281.2' cy='145.2' r='6.4'/%3E%3Crect x='254' y='144.4' width='32.8' height='5.6' rx='2.8'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.6'%3E%3Ccircle cx='137' cy='208' r='7'/%3E%3Ccircle cx='150' cy='205' r='10'/%3E%3Ccircle cx='164' cy='208' r='8'/%3E%3Crect x='130' y='207' width='41' height='7' rx='3.5'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.6'%3E%3Ccircle cx='322.85' cy='32.7' r='3.85'/%3E%3Ccircle cx='330' cy='31.05' r='5.5'/%3E%3Ccircle cx='337.7' cy='32.7' r='4.4'/%3E%3Crect x='319' y='32.15' width='22.55' height='3.85' rx='1.93'/%3E%3C/g%3E%3C/svg%3E");--btk-lchead:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 50' width='240' height='50'%3E%3Cg fill='%23fff' fill-opacity='0.85'%3E%3Ccircle cx='25.6' cy='31.2' r='5.6'/%3E%3Ccircle cx='36' cy='28.8' r='8'/%3E%3Ccircle cx='47.2' cy='31.2' r='6.4'/%3E%3Crect x='20' y='30.4' width='32.8' height='5.6' rx='2.8'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.85'%3E%3Ccircle cx='120.9' cy='41.8' r='4.9'/%3E%3Ccircle cx='130' cy='39.7' r='7'/%3E%3Ccircle cx='139.8' cy='41.8' r='5.6'/%3E%3Crect x='116' y='41.1' width='28.7' height='4.9' rx='2.45'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='0.85'%3E%3Ccircle cx='193.5' cy='25' r='3.5'/%3E%3Ccircle cx='200' cy='23.5' r='5'/%3E%3Ccircle cx='207' cy='25' r='4'/%3E%3Crect x='190' y='24.5' width='20.5' height='3.5' rx='1.75'/%3E%3C/g%3E%3C/svg%3E");--btk-line:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='8'%3E%3Cpath d='M0 7Q1 3 5 4Q7 0 11 3Q15 1 16 5Q20 4 20 7' fill='none' stroke='%239cc9f4' stroke-width='1.3'/%3E%3C/svg%3E");}
+
+/* ---------- Trò chuyện chung (cửa sổ #lnkChatModal) ---------- */
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lnk-box{background:#174a8b;box-shadow:0 34px 80px -24px rgba(10,40,95,.75),0 0 0 1px rgba(255,255,255,.22);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lnk-box header{isolation:isolate;background:linear-gradient(180deg,#3d8de8,#2a74d0);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lnk-box header::before{content:"";position:absolute;left:0;top:0;z-index:-1;width:calc(100% + 260px);height:100%;pointer-events:none;background:var(--btk-head) 0 0/260px 70px repeat-x;will-change:transform;animation:btkHead 90s linear infinite;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lnk-box header::after{background:linear-gradient(90deg,#ffe58a,rgba(255,255,255,.85),transparent);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lnk-box header h3{color:#fff;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .hd-tx small{color:#d8ebff;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .hd-ic{border-radius:50%;background:radial-gradient(circle at 35% 32%,#fffbe0,#ffd34d 62%,#ffb62e);color:#7a4a00;box-shadow:0 0 0 4px rgba(255,226,120,.28),0 0 18px rgba(255,226,120,.55);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lnk-box header button{background:rgba(255,255,255,.16);color:#fff;border-radius:50%;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lnk-box header button:hover{background:rgba(255,255,255,.3);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-wrap{background:linear-gradient(180deg,#2a74d0,#174a8b);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-sh{color:#a9cdf3;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-ch{color:#d3e6fb;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-ch:hover{background:rgba(255,255,255,.1);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-ch.on{background:rgba(255,255,255,.2);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-ch .unr{background:#ffd24d;color:#5a3b00;box-shadow:0 0 0 3px rgba(255,210,77,.32);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-me{background:rgba(255,255,255,.1);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-me .av{border-radius:50%;background:linear-gradient(135deg,#8fd0ff,#2f7fe0);}
+
+/* Vùng tin nhắn = bầu trời, hai lớp mây trôi chậm (chỉ dùng transform nên nhẹ máy) */
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-main{position:relative;isolation:isolate;background:linear-gradient(180deg,#b9dcfb 0%,#dcefff 42%,#f6fbff 100%);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-main::before,html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-main::after{content:"";position:absolute;left:0;top:0;z-index:-1;height:100%;pointer-events:none;will-change:transform;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-main::before{width:calc(100% + 420px);background:var(--btk-far) 0 0/420px 260px repeat;animation:btkFar 130s linear infinite;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-main::after{width:calc(100% + 560px);background:var(--btk-near) 0 0/560px 340px repeat;animation:btkNear 80s linear infinite;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal #lnkChatList.lc2-body{background:transparent;padding-top:12px;scrollbar-color:#8dbff2 transparent;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-day{color:#4d7db3;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-day::before,html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-day::after{height:8px;background:var(--btk-line) repeat-x center;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-msg:hover{background:rgba(47,127,224,.07);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-msg.me,html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-msg.me:hover{background:transparent;box-shadow:none;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-av{border-radius:50%;background:hsl(calc(205 + var(--h)*.12) 70% 46%);box-shadow:0 0 0 3px #fff,0 6px 14px -6px rgba(47,127,224,.7);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-name{color:hsl(calc(205 + var(--h)*.12) 66% 27%);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-tag{background:#dbeeff;color:#1d5fb0;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-meta time,html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-gt{color:#6a94c2;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-b{display:block;width:fit-content;max-width:100%;padding:8px 14px;color:#173a63;background:#fff;border:1px solid #cfe5fa;border-radius:4px 18px 18px 18px;box-shadow:0 6px 14px -10px rgba(47,127,224,.6);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-msg:not(.first) .lc2-b{border-top-left-radius:18px;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-flag{background:#fff;color:#7fa7d1;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-empty-ic{color:#2f7fe0;background:#dbeeff;border-radius:50%;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-empty b{color:#174a8b;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-empty span{color:#6a94c2;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-foot{background:rgba(232,244,255,.9);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-compose{background:#fff;border:1.5px solid #b9dafa;border-radius:999px;padding:6px 6px 6px 18px;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-compose:focus-within{background:#fff;border-color:#3d8de8;box-shadow:0 0 0 4px rgba(61,141,232,.2);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-compose textarea{color:#173a63;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-compose textarea::placeholder,html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-hint,html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-count{color:#84a9d0;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-send{border-radius:50%;color:#fff;background:linear-gradient(145deg,#6db6ff,#2f7fe0);box-shadow:0 8px 16px -8px rgba(47,127,224,.9);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-send:hover:not(:disabled){animation:btkRipple 1.3s ease-out infinite;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-send:disabled{background:#d3e6f8;color:#8fb0d3;box-shadow:none;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-new{background:linear-gradient(135deg,#2a74d0,#1e5fae);box-shadow:0 10px 24px -8px rgba(10,45,100,.75);}
+
+/* ---------- Chat phòng chờ ---------- */
+html[data-chat-theme~="bau-troi-may-khung"] .lobby-log-panel{background:var(--btk-lobby) 0 0/360px 230px repeat local,linear-gradient(180deg,#c3e1fc,#f4faff) local;scrollbar-color:#8dbff2 transparent;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-head{overflow:hidden;background:linear-gradient(180deg,rgba(176,213,248,.97),rgba(212,232,252,.97));border-bottom:1px solid #b9dafa;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-head::before{content:"";position:absolute;left:0;top:0;z-index:-1;width:calc(100% + 240px);height:100%;pointer-events:none;background:var(--btk-lchead) 0 0/240px 50px repeat-x;will-change:transform;animation:btkHeadL 70s linear infinite;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-title{color:#1d5fb0;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-dot{background:#3d8de8;box-shadow:0 0 0 4px rgba(61,141,232,.22);animation:btkRipple 2.2s ease-out infinite;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-sub{color:#5a88b8;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-sys{background:#dcecfd;color:#1d5fb0;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-sys time{color:#4f9bec;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-av{background:hsl(calc(205 + var(--h)*.12) 72% 44%);box-shadow:0 6px 14px -6px rgba(47,127,224,.7);}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-name{color:#1d5fb0;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-name em,html[data-chat-theme~="bau-troi-may-khung"] .lc-col time{color:#6a94c2;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-group .lc-b{background:#fff;border-color:#cfe5fa;color:#173a63;box-shadow:0 4px 12px -8px rgba(47,127,224,.6);}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-empty{color:#5a88b8;}
+html[data-chat-theme~="bau-troi-may-khung"] .lc-new{background:#2a74d0;}
+html[data-chat-theme~="bau-troi-may-khung"] .lobby-chat-input-row{background:#fff;border:1.5px solid #b9dafa !important;border-radius:999px !important;}
+html[data-chat-theme~="bau-troi-may-khung"] .lobby-chat-input-row:focus-within{border-color:#3d8de8 !important;box-shadow:0 0 0 4px rgba(61,141,232,.2) !important;}
+html[data-chat-theme~="bau-troi-may-khung"] .lobby-chat-input-row input{color:#173a63;}
+html[data-chat-theme~="bau-troi-may-khung"] .lobby-chat-input-row input::placeholder{color:#84a9d0;}
+html[data-chat-theme~="bau-troi-may-khung"] .lobby-chat-input-row .icon-btn{background:linear-gradient(145deg,#6db6ff,#2f7fe0) !important;border-radius:50% !important;color:#fff;}
+
+@keyframes btkFar{to{transform:translateX(-420px);}}
+@keyframes btkNear{to{transform:translateX(-560px);}}
+@keyframes btkHead{to{transform:translateX(-260px);}}
+@keyframes btkHeadL{to{transform:translateX(-240px);}}
+@keyframes btkRipple{0%{box-shadow:0 0 0 0 rgba(109,182,255,.6);}100%{box-shadow:0 0 0 12px rgba(109,182,255,0);}}
+@media (prefers-reduced-motion:reduce){html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lnk-box header::before,html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-main::before,html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-main::after,html[data-chat-theme~="bau-troi-may-khung"] .lc-head::before,html[data-chat-theme~="bau-troi-may-khung"] .lc-dot,html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-send:hover{animation:none !important;}}
+
+/* ===== v2 nâng cấp: bình minh, nắng ở góc, bong bóng kính mờ ===== */
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lnk-box header{background:radial-gradient(circle at 92% 0,rgba(255,236,160,.55) 0 18px,transparent 90px),linear-gradient(180deg,#4a9af0,#2a74d0);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc3-main{background:radial-gradient(circle at 96% 4%,rgba(255,240,180,.8) 0 24px,rgba(255,240,180,.25) 70px,transparent 160px),linear-gradient(180deg,#8fc6fb 0%,#c6e3ff 38%,#ecf6ff 72%,#fff5e0 100%);}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-b,html[data-chat-theme~="bau-troi-may-khung"] .lc-group .lc-b{background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-color:rgba(255,255,255,.95);box-shadow:0 10px 20px -14px rgba(47,127,224,.7),inset 0 1px 0 #fff;}
+html[data-chat-theme~="bau-troi-may-khung"] .lobby-log-panel{background:var(--btk-lobby) 0 0/360px 230px repeat local,radial-gradient(circle at 96% 3%,rgba(255,240,180,.75) 0 20px,transparent 120px) local,linear-gradient(180deg,#b5d9fb,#f4faff 85%,#fff5e0) local;}
+html[data-chat-theme~="bau-troi-may-khung"] #lnkChatModal .lc2-send,html[data-chat-theme~="bau-troi-may-khung"] .lobby-chat-input-row .icon-btn{box-shadow:0 0 0 3px rgba(255,255,255,.75),0 8px 16px -8px rgba(47,127,224,.9);}
+</style>
+
+
+<style data-theme-id="mu-rom">
+/* ===== Mũ Rơm · bong bóng (tin nhận): giấy da kem, đai vàng ở đáy ===== */
+html[data-chat-theme~="mu-rom"] #lnkChatModal .lc2-b,html[data-chat-theme~="mu-rom"] .lc-group .lc-b{position:relative;overflow:hidden;display:block;width:fit-content;max-width:100%;padding:8px 14px 13px;color:#4a2c12;border:1px solid #ecd49a;background:linear-gradient(180deg,transparent calc(100% - 4px),#f6c744 calc(100% - 4px)),linear-gradient(180deg,#fffdf6,#fff0c4);box-shadow:0 6px 14px -10px rgba(122,16,25,.55);}
+html[data-chat-theme~="mu-rom"] #lnkChatModal .lc2-b{border-radius:4px 18px 18px 18px;}
+html[data-chat-theme~="mu-rom"] #lnkChatModal .lc2-msg:not(.first) .lc2-b{border-top-left-radius:18px;}
+html[data-chat-theme~="mu-rom"] .lc-group .lc-b{border-radius:18px;}
+html[data-chat-theme~="mu-rom"] .lc-group.other .lc-b:first-of-type{border-top-left-radius:6px;}
+/* Bong bóng "tin gửi đi" (đỏ vest, vòng mây, mũ rơm, giãn cao su) nằm ở khối data-fx-id="mu-rom" bên dưới để mọi người cùng thấy. */
+
+/* ===== v12 nâng cấp: giấy da kem, đai thừng vàng ở đáy ===== */
+html[data-chat-theme~="mu-rom"] #lnkChatModal .lc2-b,html[data-chat-theme~="mu-rom"] .lc-group .lc-b{padding-bottom:15px;border:1.5px solid #dcbb6a;background:repeating-linear-gradient(115deg,#a8721f 0 3px,#e8bd5a 3px 6px) left bottom/100% 5px no-repeat,radial-gradient(circle at 100% 0,rgba(215,38,61,.1) 0 22px,transparent 23px),repeating-linear-gradient(135deg,rgba(168,114,31,.05) 0 1px,transparent 1px 7px),linear-gradient(180deg,#fffdf4,#fdeab4);box-shadow:0 8px 16px -10px rgba(122,16,25,.6),inset 0 1px 0 #fff;}
+</style>
+
+<style data-theme-id="mu-rom-khung">
+html[data-chat-theme~="mu-rom-khung"]{--mr-hat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'%3E%3Cellipse cx='32' cy='29' rx='30' ry='8.5' fill='%23f2c14e' stroke='%23a9701a' stroke-width='2'/%3E%3Cpath d='M15 27C14 10 22 3 32 3s18 7 17 24c-9 4-25 4-34 0z' fill='%23fbd96b' stroke='%23a9701a' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M15.4 21.5c10 4.2 23.2 4.2 33.2 0l.4 5.6c-10 4.2-23.4 4.2-34 0z' fill='%23d7263d' stroke='%238c1620' stroke-width='1.4'/%3E%3Cpath d='M24 8l-2 9M32 6v10M40 8l2 9' stroke='%23d9a82a' stroke-width='1.2' stroke-linecap='round' opacity='.8'/%3E%3C/svg%3E");}
+
+/* ---------- Trò chuyện chung (cửa sổ #lnkChatModal) ---------- */
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lnk-box{background:#091c3a;box-shadow:0 34px 80px -24px rgba(70,8,16,.8),0 0 0 2px #f6c744,0 0 0 5px rgba(179,18,31,.7);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lnk-box header{isolation:isolate;overflow:hidden;background:linear-gradient(120deg,#9e1220,#d7263d 55%,#b3121f);}
+/* Tia nắng xoay quanh biểu tượng mũ rơm (chỉ transform nên nhẹ máy) */
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lnk-box header::before{content:"";position:absolute;left:-73px;top:50%;width:220px;height:220px;margin-top:-110px;z-index:-1;pointer-events:none;border-radius:50%;background:repeating-conic-gradient(rgba(255,226,120,.34) 0 7deg,transparent 7deg 18deg);-webkit-mask-image:radial-gradient(circle,#000 0,transparent 68%);mask-image:radial-gradient(circle,#000 0,transparent 68%);will-change:transform;animation:mrRays 36s linear infinite;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lnk-box header::after{height:5px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='5'%3E%3Crect width='16' height='5' fill='%23f6c744'/%3E%3Cpath d='M0 5L4 .8L8 5M8 5L12 .8L16 5' fill='none' stroke='%23a9701a' stroke-width='1'/%3E%3C/svg%3E") repeat-x;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lnk-box header h3{color:#fff;text-shadow:0 2px 0 rgba(90,5,15,.45);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .hd-tx small{color:#ffe9a8;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .hd-ic{font-size:0;border-radius:50%;background:var(--mr-hat) center 58%/78% auto no-repeat,radial-gradient(circle at 50% 32%,#fff6cf,#f6c744 68%,#d9a82a);box-shadow:0 0 0 3px #fff7e0,0 0 0 5px #8c1620,0 6px 14px -4px rgba(60,5,10,.7);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .hd-ic svg{opacity:0;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lnk-box header button{background:rgba(255,255,255,.18);color:#fff;border-radius:50%;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lnk-box header button:hover{background:#f6c744;color:#7a1019;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-wrap{background:repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 10px,transparent 10px 20px),linear-gradient(180deg,#0f2f5e,#091c3a);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-sh{color:#f6c744;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-ch{color:#d6e4fa;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-ch:hover{background:rgba(246,199,68,.12);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-ch.on{background:rgba(246,199,68,.22);box-shadow:inset 3px 0 0 #f6c744;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-ch .unr{background:#e03247;color:#fff;box-shadow:0 0 0 3px rgba(224,50,71,.38);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-me{background:rgba(255,255,255,.09);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-me .av{border-radius:50%;background:linear-gradient(135deg,#f6c744,#e03247);color:#fff;}
+
+/* Vùng tin nhắn = tấm giấy da, dây thừng ở mép trên, tia bùng nổ ở góc phải */
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-main{position:relative;isolation:isolate;background:radial-gradient(circle at 9% 93%,rgba(246,199,68,.26) 0 52px,transparent 53px),radial-gradient(circle at 93% 72%,rgba(215,38,61,.07) 0 84px,transparent 85px),linear-gradient(180deg,#fff9e5,#fdeebb);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-main::before{content:"";position:absolute;right:0;top:0;width:380px;height:380px;z-index:-1;pointer-events:none;background:repeating-conic-gradient(from 180deg at 100% 0%,rgba(215,38,61,.13) 0 4deg,transparent 4deg 10deg);-webkit-mask-image:radial-gradient(circle at 100% 0,#000 0,transparent 70%);mask-image:radial-gradient(circle at 100% 0,#000 0,transparent 70%);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-main::after{content:"";position:absolute;left:0;right:0;top:0;height:6px;z-index:2;pointer-events:none;background:repeating-linear-gradient(115deg,#a8721f 0 4px,#e8bd5a 4px 8px);box-shadow:0 2px 0 rgba(122,16,25,.28);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal #lnkChatList.lc2-body{background:transparent;padding-top:14px;scrollbar-color:#d7a542 transparent;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-day{color:#9a6a1c;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-day::before,html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-day::after{height:5px;border-radius:3px;background:repeating-linear-gradient(115deg,#c99a3b 0 3px,#f1d58a 3px 6px);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-msg:hover{background:rgba(215,38,61,.05);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-msg.me,html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-msg.me:hover{background:transparent;box-shadow:none;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-av{border-radius:50%;background:hsl(calc(345 + var(--h)*.16) 72% 45%);box-shadow:0 0 0 3px #fff9e5,0 0 0 5px #e5b44c,0 6px 14px -6px rgba(122,16,25,.7);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-name{color:hsl(calc(345 + var(--h)*.16) 70% 28%);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-tag{background:#fde68a;color:#7a1019;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-meta time,html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-gt{color:#a68350;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-b{display:block;width:fit-content;max-width:100%;padding:8px 14px;color:#4a2c12;background:#fffdf6;border:1.5px solid #ecd49a;border-radius:4px 18px 18px 18px;box-shadow:0 6px 14px -10px rgba(122,16,25,.5);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-msg:not(.first) .lc2-b{border-top-left-radius:18px;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-flag{background:#fffdf6;color:#b08a50;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-empty-ic{color:#b3121f;background:#fde68a;border-radius:50%;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-empty b{color:#7a1019;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-empty span{color:#a68350;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-foot{background:#fdeebb;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-compose{background:#fffdf6;border:2px solid #e5b44c;border-radius:999px;padding:6px 6px 6px 18px;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-compose:focus-within{background:#fffdf6;border-color:#d7263d;box-shadow:0 0 0 4px rgba(215,38,61,.18);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-compose textarea{color:#4a2c12;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-compose textarea::placeholder,html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-hint,html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-count{color:#b9985f;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-send{border-radius:50%;color:#fff;background:linear-gradient(145deg,#ff5468,#c81d2c);box-shadow:0 0 0 3px #f6c744,0 8px 16px -8px rgba(160,15,30,.9);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-send:hover:not(:disabled){animation:mrGum .7s ease-in-out infinite;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-send:disabled{background:#ead9ac;color:#b99a5f;box-shadow:0 0 0 3px #f0dfae;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-new{background:linear-gradient(135deg,#d7263d,#9e1220);box-shadow:0 10px 24px -8px rgba(90,5,15,.8);}
+
+/* ---------- Chat phòng chờ (v12: giấy da bản đồ kho báu, tiêu đề có mũ rơm + tia nắng, khung viền vàng-đỏ) ---------- */
+html[data-chat-theme~="mu-rom-khung"] .lobby-wrap{background:#fdeebb;box-shadow:0 34px 80px -24px rgba(70,8,16,.75),0 0 0 2px #f6c744,0 0 0 5px rgba(179,18,31,.7);}
+html[data-chat-theme~="mu-rom-khung"] .lobby-log-panel{position:relative;scrollbar-color:#d7a542 transparent;background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20120%20120'%20fill='none'%20stroke='%23a8721f'%20stroke-width='2'%20opacity='.55'%3E%3Ccircle%20cx='60'%20cy='60'%20r='54'/%3E%3Ccircle%20cx='60'%20cy='60'%20r='45'%20stroke-dasharray='2%205'/%3E%3Cpath%20d='M60%206L68%2052%20114%2060%2068%2068%2060%20114%2052%2068%206%2060%2052%2052Z'%20fill='%23d9a82a'%20fill-opacity='.55'/%3E%3Cpath%20d='M60%2018L65%2055%2060%2060%2055%2055Z'%20fill='%23b3121f'%20stroke='none'/%3E%3Ccircle%20cx='60'%20cy='60'%20r='5'%20fill='%23fff7e0'/%3E%3C/svg%3E") right 14px bottom 14px/132px 132px no-repeat,url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20150'%20fill='none'%3E%3Cpath%20d='M8%20130C60%2020%20112%20150%20166%2076S250%2018%20276%2058'%20stroke='%23b3121f'%20stroke-opacity='.2'%20stroke-width='3'%20stroke-dasharray='7%208'%20stroke-linecap='round'/%3E%3Cpath%20d='M268%2050l17%2017M285%2050l-17%2017'%20stroke='%23b3121f'%20stroke-opacity='.3'%20stroke-width='5'%20stroke-linecap='round'/%3E%3C/svg%3E") left 10px bottom 18px/min(340px,62%) auto no-repeat,radial-gradient(ellipse 120% 95% at 50% 42%,transparent 58%,rgba(168,114,31,.26) 100%),repeating-linear-gradient(135deg,rgba(168,114,31,.05) 0 1px,transparent 1px 8px),linear-gradient(180deg,#fff7d9,#f8e4aa);}
+html[data-chat-theme~="mu-rom-khung"] .lobby-wrap .lc-head{isolation:isolate;overflow:hidden;padding:13px 18px 15px;background:linear-gradient(120deg,#8f0f1c,#d7263d 55%,#a8101e);border-bottom:0;box-shadow:0 10px 18px -12px rgba(70,8,16,.8);}
+html[data-chat-theme~="mu-rom-khung"] .lobby-wrap .lc-head::before{content:"";position:absolute;left:-84px;top:50%;width:230px;height:230px;margin-top:-115px;z-index:-1;pointer-events:none;border-radius:50%;background:repeating-conic-gradient(rgba(255,226,120,.32) 0 7deg,transparent 7deg 18deg);-webkit-mask-image:radial-gradient(circle,#000 0,transparent 68%);mask-image:radial-gradient(circle,#000 0,transparent 68%);will-change:transform;animation:mrRays 36s linear infinite;}
+html[data-chat-theme~="mu-rom-khung"] .lobby-wrap .lc-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;pointer-events:none;background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='16'%20height='5'%3E%3Crect%20width='16'%20height='5'%20fill='%23f6c744'/%3E%3Cpath%20d='M0%205L4%20.8L8%205M8%205L12%20.8L16%205'%20fill='none'%20stroke='%23a9701a'%20stroke-width='1'/%3E%3C/svg%3E") repeat-x;}
+html[data-chat-theme~="mu-rom-khung"] .lobby-wrap .lc-title{gap:12px;color:#fff !important;font-weight:900;text-shadow:0 2px 0 rgba(90,5,15,.5);}
+html[data-chat-theme~="mu-rom-khung"] .lc-dot{position:relative;flex:0 0 36px;width:36px;height:36px;border-radius:50%;background:var(--mr-hat) center 60%/76% auto no-repeat,radial-gradient(circle at 50% 30%,#fff6cf,#f6c744 68%,#d9a82a);box-shadow:0 0 0 3px #fff7e0,0 0 0 5px #8c1620,0 6px 14px -4px rgba(60,5,10,.7);animation:none;}
+html[data-chat-theme~="mu-rom-khung"] .lc-dot::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid rgba(255,226,120,.85);pointer-events:none;animation:mrPing 2.4s ease-out infinite;}
+html[data-chat-theme~="mu-rom-khung"] .lobby-wrap .lc-sub{color:#7a1019 !important;background:linear-gradient(180deg,#fff6cf,#f6c744) !important;border:1.5px solid #fff7e0;border-radius:999px !important;padding:4px 13px !important;font-weight:900;box-shadow:0 4px 10px -4px rgba(60,5,10,.65);}
+html[data-chat-theme~="mu-rom-khung"] .lc-sys{background:linear-gradient(180deg,#fff3c4,#fbdc7a);color:#7a1019;border:1.5px dashed #c99a3b;box-shadow:0 4px 10px -6px rgba(122,16,25,.6);}
+html[data-chat-theme~="mu-rom-khung"] .lc-sys::before{content:"\2693";font-size:13px;}
+html[data-chat-theme~="mu-rom-khung"] .lc-sys time{color:#b3121f;}
+html[data-chat-theme~="mu-rom-khung"] .lc-group .lc-av{border-radius:50%;background:radial-gradient(circle at 35% 25%,rgba(255,255,255,.4),transparent 48%),hsl(calc(345 + var(--h)*.16) 72% 45%);box-shadow:0 0 0 2px #fff9e5,0 0 0 4px #e5b44c,0 6px 12px -5px rgba(122,16,25,.7);}
+html[data-chat-theme~="mu-rom-khung"] .lc-group.other .lc-av{align-self:flex-start;margin:12px 0 0;}
+html[data-chat-theme~="mu-rom-khung"] .lc-name{color:#8c1620;font-weight:900;letter-spacing:.2px;text-shadow:0 1px 0 rgba(255,255,255,.7);}
+html[data-chat-theme~="mu-rom-khung"] .lc-name em,html[data-chat-theme~="mu-rom-khung"] .lc-col time{color:#a68350;font-weight:800;}
+html[data-chat-theme~="mu-rom-khung"] .lc-group .lc-b{border:1.5px solid #ecd49a;color:#4a2c12;background:linear-gradient(180deg,transparent calc(100% - 4px),#f6c744 calc(100% - 4px)),linear-gradient(180deg,#fffdf6,#fff0c4);box-shadow:0 6px 14px -9px rgba(122,16,25,.6);}
+html[data-chat-theme~="mu-rom-khung"] .lc-empty{color:#a68350;}
+html[data-chat-theme~="mu-rom-khung"] .lc-new{background:linear-gradient(135deg,#d7263d,#9e1220) !important;color:#fff;box-shadow:0 0 0 2px #f6c744,0 10px 22px -8px rgba(90,5,15,.8);}
+html[data-chat-theme~="mu-rom-khung"] .lobby-chat-input-row{margin-top:12px;background:#fffdf6;border:2px solid #e5b44c !important;border-radius:999px !important;box-shadow:0 8px 20px -12px rgba(122,16,25,.6),inset 0 2px 4px rgba(168,114,31,.12);}
+html[data-chat-theme~="mu-rom-khung"] .lobby-chat-input-row:focus-within{border-color:#d7263d !important;box-shadow:0 0 0 4px rgba(215,38,61,.18) !important;}
+html[data-chat-theme~="mu-rom-khung"] .lobby-chat-input-row input{color:#4a2c12;}
+html[data-chat-theme~="mu-rom-khung"] .lobby-chat-input-row input::placeholder{color:#b9985f;}
+html[data-chat-theme~="mu-rom-khung"] .lobby-chat-input-row .icon-btn{background:linear-gradient(145deg,#ff5468,#c81d2c) !important;border-radius:50% !important;color:#fff;box-shadow:0 0 0 3px #f6c744,0 8px 16px -8px rgba(160,15,30,.9);}
+html[data-chat-theme~="mu-rom-khung"] .lobby-chat-input-row .icon-btn:hover{animation:mrGum .7s ease-in-out infinite;}
+
+@keyframes mrRays{to{transform:rotate(360deg);}}
+@keyframes mrGum{0%,100%{transform:scale(1);}30%{transform:scale(1.28,.8);}60%{transform:scale(.88,1.18);}}
+@keyframes mrPing{0%{transform:scale(.9);opacity:.9;}100%{transform:scale(1.55);opacity:0;}}
+@keyframes mrRipple{0%{box-shadow:0 0 0 0 rgba(246,199,68,.7);}100%{box-shadow:0 0 0 12px rgba(246,199,68,0);}}
+@media (prefers-reduced-motion:reduce){html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lnk-box header::before,html[data-chat-theme~="mu-rom-khung"] .lobby-wrap .lc-head::before,html[data-chat-theme~="mu-rom-khung"] .lc-dot::after,html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-send:hover,html[data-chat-theme~="mu-rom-khung"] .lobby-chat-input-row .icon-btn:hover{animation:none !important;}}
+
+/* ===== v13 nâng cấp: bản đồ kho báu có vignette, tiêu đề bóng ===== */
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lnk-box header{background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 45%),linear-gradient(120deg,#9e1220,#d7263d 55%,#b3121f);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-wrap{background:repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 10px,transparent 10px 20px),linear-gradient(180deg,#123766,#08193a);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc3-main{background:radial-gradient(circle at 9% 93%,rgba(246,199,68,.3) 0 52px,transparent 53px),radial-gradient(ellipse 120% 95% at 50% 40%,transparent 55%,rgba(168,114,31,.28) 100%),repeating-linear-gradient(135deg,rgba(168,114,31,.05) 0 1px,transparent 1px 8px),linear-gradient(180deg,#fff9e5,#fbe7a8);}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-b{background:linear-gradient(180deg,#fffef8,#fff3cf);border:1.5px solid #e3c677;box-shadow:0 8px 16px -10px rgba(122,16,25,.55),inset 0 1px 0 #fff;}
+html[data-chat-theme~="mu-rom-khung"] #lnkChatModal .lc2-compose{box-shadow:0 8px 18px -12px rgba(122,16,25,.6),inset 0 2px 4px rgba(168,114,31,.12);}
+</style>
+
+<!-- ===== HIỆU ỨNG TIN NHẮN — mọi người cùng thấy (xem hướng dẫn ở đầu file) ===== -->
+<style data-fx-id="song-nuoc">
+[data-fx="song-nuoc"]{--fx-f:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 14'%3E%3Cpath d='M0 7C13.3 1 26.7 1 40 7S66.7 13 80 7V14H0Z' fill='%238cf3ff' fill-opacity='.34'/%3E%3Cpath d='M-80 7C-66.7 1 -53.3 1 -40 7S-13.3 13 0 7C13.3 1 26.7 1 40 7S66.7 13 80 7C93.3 1 106.7 1 120 7S146.7 13 160 7' fill='none' stroke='%23ffffff' stroke-opacity='.92' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");--fx-b:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 16'%3E%3Cpath d='M0 7C18.7 2 37.3 2 56 7S93.3 12 112 7V16H0Z' fill='%23ffffff' fill-opacity='.13'/%3E%3Cpath d='M-112 7C-93.3 2 -74.7 2 -56 7S-18.7 12 0 7C18.7 2 37.3 2 56 7S93.3 12 112 7C130.7 2 149.3 2 168 7S205.3 12 224 7' fill='none' stroke='%23ffffff' stroke-opacity='.42' stroke-width='1.1' stroke-linecap='round'/%3E%3C/svg%3E");}
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"] .lc2-b,html body .lc-group[data-fx="song-nuoc"] .lc-b{position:relative;overflow:hidden;isolation:isolate;display:block;width:fit-content;max-width:100%;padding:8px 14px 18px;color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:18px;text-shadow:0 1px 2px rgba(2,40,70,.5);transform-origin:0 0;
+ background:radial-gradient(circle at calc(100% - 16px) 15px,rgba(255,255,255,.14) 0 3.7px,rgba(255,255,255,.78) 4.1px 4.9px,transparent 5.5px),
+  radial-gradient(circle at calc(100% - 17.7px) 13.3px,rgba(255,255,255,.95) 0 1.4px,transparent 1.9px),
+  radial-gradient(circle at calc(100% - 31px) 27px,rgba(255,255,255,.10) 0 2.2px,rgba(255,255,255,.62) 2.6px 3.4px,transparent 4.0px),
+  radial-gradient(circle at calc(100% - 32.2px) 25.8px,rgba(255,255,255,.9) 0 0.9px,transparent 1.3px),
+  radial-gradient(circle at calc(100% - 9px) 32px,rgba(255,255,255,.08) 0 1.2px,rgba(255,255,255,.5) 1.6px 2.4px,transparent 3.0px),
+  radial-gradient(120% 95% at 0% 0%,rgba(255,255,255,.22),transparent 58%),
+  linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0) 46%),
+  linear-gradient(155deg,#0aa0dc 0%,#0787c9 42%,#0369a1 76%,#0b4a80 100%);
+ box-shadow:0 10px 22px -12px rgba(3,105,161,.9),inset 0 1px 0 rgba(255,255,255,.45),inset 0 -9px 14px -10px rgba(2,52,95,.55);}
+html body #lnkChatModal .lc2-msg.me[data-fx="song-nuoc"] .lc2-b,html body .lc-group.me[data-fx="song-nuoc"] .lc-b{transform-origin:100% 0;}
+html body #lnkChatModal .lc2-msg.me[data-fx="song-nuoc"] .lc2-b{border-radius:18px 4px 18px 18px;}
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"]:not(.me).first .lc2-b{border-radius:4px 18px 18px 18px;}
+html body .lc-group.me[data-fx="song-nuoc"] .lc-b:first-of-type{border-top-right-radius:6px;}
+html body .lc-group.other[data-fx="song-nuoc"] .lc-b:first-of-type{border-top-left-radius:6px;}
+html body #lnkChatModal .lc2-msg.me[data-fx="song-nuoc"],html body #lnkChatModal .lc2-msg.me[data-fx="song-nuoc"]:hover{background:transparent;box-shadow:none;}
+
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"] .lc2-b::before,html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"] .lc2-b::after,html body .lc-group[data-fx="song-nuoc"] .lc-b::before,html body .lc-group[data-fx="song-nuoc"] .lc-b::after{content:"";position:absolute;left:0;z-index:-1;width:calc(100% + 160px);pointer-events:none;background-repeat:repeat-x;transform:none;translate:none;animation:none;}
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"] .lc2-b::after,html body .lc-group[data-fx="song-nuoc"] .lc-b::after{bottom:0;height:14px;background-image:var(--fx-f);background-size:80px 14px;}
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"] .lc2-b::before,html body .lc-group[data-fx="song-nuoc"] .lc-b::before{bottom:0;height:16px;background-image:var(--fx-b);background-size:112px 16px;}
+/* Chuyển động chỉ chạy ở các tin mới nhất (nhẹ máy khi chat dài); hiệu ứng khi gửi chỉ ở tin cuối */
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"]:nth-last-child(-n+10) .lc2-b::after,html body .lc-group[data-fx="song-nuoc"]:nth-last-child(-n+8) .lc-b::after{animation:snxDrift 5s linear infinite;will-change:transform;}
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"]:nth-last-child(-n+10) .lc2-b::before,html body .lc-group[data-fx="song-nuoc"]:nth-last-child(-n+8) .lc-b::before{animation:snxDrift2 8.5s linear infinite reverse,snxBob 3.4s ease-in-out infinite alternate;will-change:transform;}
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"]:last-child .lc2-b,html body .lc-group[data-fx="song-nuoc"]:last-child .lc-b:nth-last-child(2){animation:snxSplash .8s cubic-bezier(.2,.8,.3,1) both;}
+@keyframes snxDrift{to{transform:translateX(-80px);}}
+@keyframes snxDrift2{to{transform:translateX(-112px);}}
+@keyframes snxBob{from{translate:0 0;}to{translate:0 3px;}}
+@keyframes snxSplash{
+ 0%{transform:scale(.88);box-shadow:0 10px 22px -12px rgba(3,105,161,.9),inset 0 1px 0 rgba(255,255,255,.45),inset 0 -9px 14px -10px rgba(2,52,95,.55),0 0 0 0 rgba(103,232,249,.7),0 0 0 0 rgba(255,255,255,.5);}
+ 55%{transform:scale(1.03);}
+ 100%{transform:scale(1);box-shadow:0 10px 22px -12px rgba(3,105,161,.9),inset 0 1px 0 rgba(255,255,255,.45),inset 0 -9px 14px -10px rgba(2,52,95,.55),0 0 0 14px rgba(103,232,249,0),0 0 0 26px rgba(255,255,255,0);}}
+@media (prefers-reduced-motion:reduce){html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"] .lc2-b,html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"] .lc2-b::before,html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"] .lc2-b::after,html body .lc-group[data-fx="song-nuoc"] .lc-b,html body .lc-group[data-fx="song-nuoc"] .lc-b::before,html body .lc-group[data-fx="song-nuoc"] .lc-b::after{animation:none !important;}}
+
+/* ===== v6 nâng cấp: nước xanh sâu, tia sáng xuyên nước, quầng sáng ===== */
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc"] .lc2-b,html body .lc-group[data-fx="song-nuoc"] .lc-b{--sns:0 12px 24px -12px rgba(3,105,161,.95),0 0 22px -8px rgba(34,211,238,.6),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -10px 16px -10px rgba(2,40,85,.6);border-color:rgba(190,248,255,.55);background:radial-gradient(circle at calc(100% - 16px) 15px,rgba(255,255,255,.14) 0 3.7px,rgba(255,255,255,.85) 4.1px 4.9px,transparent 5.5px),radial-gradient(circle at calc(100% - 17.7px) 13.3px,#fff 0 1.4px,transparent 1.9px),radial-gradient(circle at calc(100% - 31px) 27px,rgba(255,255,255,.1) 0 2.2px,rgba(255,255,255,.66) 2.6px 3.4px,transparent 4px),radial-gradient(circle at calc(100% - 9px) 32px,rgba(255,255,255,.08) 0 1.2px,rgba(255,255,255,.55) 1.6px 2.4px,transparent 3px),repeating-linear-gradient(112deg,rgba(255,255,255,.07) 0 7px,transparent 7px 20px),radial-gradient(120% 95% at 0 0,rgba(255,255,255,.3),transparent 58%),linear-gradient(160deg,#12b6ee 0%,#0a8fd2 40%,#0668a8 75%,#0a3f78 100%);box-shadow:var(--sns);}
+@keyframes snxSplash{0%{transform:scale(.88);box-shadow:var(--sns),0 0 0 0 rgba(103,232,249,.7),0 0 0 0 rgba(255,255,255,.5);}55%{transform:scale(1.03);}100%{transform:scale(1);box-shadow:var(--sns),0 0 0 14px rgba(103,232,249,0),0 0 0 26px rgba(255,255,255,0);}}
+</style>
+
+<style data-fx-id="song-nuoc-khung">
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc-khung"] .lc2-b,html body .lc-group[data-fx="song-nuoc-khung"] .lc-b{position:relative;overflow:visible;display:block;width:fit-content;max-width:100%;padding:8px 14px;color:#fff;text-shadow:none;border:1px solid transparent;border-radius:18px;background:linear-gradient(135deg,#06b6d4,#0369a1);box-shadow:0 10px 20px -12px rgba(3,105,161,.9);}
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc-khung"] .lc2-b::before,html body #lnkChatModal .lc2-msg[data-fx="song-nuoc-khung"] .lc2-b::after,html body .lc-group[data-fx="song-nuoc-khung"] .lc-b::before,html body .lc-group[data-fx="song-nuoc-khung"] .lc-b::after{content:none;animation:none;}
+html body #lnkChatModal .lc2-msg.me[data-fx="song-nuoc-khung"] .lc2-b{border-radius:18px 4px 18px 18px;}
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc-khung"]:not(.me).first .lc2-b{border-radius:4px 18px 18px 18px;}
+html body .lc-group.me[data-fx="song-nuoc-khung"] .lc-b:first-of-type{border-top-right-radius:6px;}
+html body .lc-group.other[data-fx="song-nuoc-khung"] .lc-b:first-of-type{border-top-left-radius:6px;}
+/* Gợn nước một lần ở tin cuối */
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc-khung"]:last-child .lc2-b,html body .lc-group[data-fx="song-nuoc-khung"]:last-child .lc-b:nth-last-child(2){animation:snxRing 1.2s ease-out 1;}
+@keyframes snxRing{0%{box-shadow:0 0 0 0 rgba(34,211,238,.55);}100%{box-shadow:0 0 0 12px rgba(34,211,238,0);}}
+@media (prefers-reduced-motion:reduce){html body #lnkChatModal .lc2-msg[data-fx="song-nuoc-khung"] .lc2-b,html body .lc-group[data-fx="song-nuoc-khung"] .lc-b{animation:none !important;}}
+
+/* ===== v4 nâng cấp ===== */
+html body #lnkChatModal .lc2-msg[data-fx="song-nuoc-khung"] .lc2-b,html body .lc-group[data-fx="song-nuoc-khung"] .lc-b{border-color:rgba(190,248,255,.45);background:radial-gradient(circle at calc(100% - 15px) 13px,rgba(255,255,255,.18) 0 3px,rgba(255,255,255,.8) 3.4px 4.2px,transparent 4.8px),radial-gradient(120% 90% at 0 0,rgba(255,255,255,.28),transparent 55%),linear-gradient(135deg,#19c3e8,#0a86c8 55%,#0560a0);box-shadow:0 12px 22px -12px rgba(3,105,161,.95),0 0 18px -8px rgba(34,211,238,.6),inset 0 1px 0 rgba(255,255,255,.5);}
+</style>
+
+
+<style data-fx-id="bau-troi-may">
+[data-fx="bau-troi-may"]{--fx-f:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 22' width='150' height='22'%3E%3Cdefs%3E%3ClinearGradient id='g' gradientUnits='userSpaceOnUse' x1='0' y1='0' x2='0' y2='22'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='1' stop-color='%23d4e9ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='url(%23g)' fill-opacity='1'%3E%3Ccircle cx='18' cy='15' r='7'/%3E%3Ccircle cx='30' cy='11' r='10'/%3E%3Ccircle cx='44' cy='14' r='8'/%3E%3Ccircle cx='54' cy='16.5' r='5.5'/%3E%3Crect x='11' y='15' width='49' height='7' rx='3.5'/%3E%3Ccircle cx='80' cy='17' r='5'/%3E%3Ccircle cx='90' cy='13' r='8'/%3E%3Ccircle cx='102' cy='16' r='6'/%3E%3Crect x='75' y='16' width='33' height='6' rx='3'/%3E%3Ccircle cx='127' cy='18' r='4'/%3E%3Ccircle cx='135' cy='15' r='7'/%3E%3Ccircle cx='143' cy='18' r='4'/%3E%3Crect x='122' y='18' width='25' height='4' rx='2'/%3E%3C/g%3E%3C/svg%3E");--fx-b:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 22' width='100' height='22'%3E%3Cg fill='%23ffffff' fill-opacity='.5'%3E%3Ccircle cx='16' cy='17' r='6'/%3E%3Ccircle cx='26' cy='13' r='9'/%3E%3Ccircle cx='37' cy='16' r='7'/%3E%3Crect x='11' y='16' width='33' height='6' rx='3'/%3E%3Ccircle cx='66' cy='18' r='5'/%3E%3Ccircle cx='76' cy='14' r='8'/%3E%3Ccircle cx='86' cy='17' r='6'/%3E%3Crect x='61' y='17' width='31' height='5' rx='2.5'/%3E%3C/g%3E%3C/svg%3E");}
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"] .lc2-b,html body .lc-group[data-fx="bau-troi-may"] .lc-b{position:relative;overflow:hidden;isolation:isolate;display:block;width:fit-content;max-width:100%;padding:8px 14px 20px;color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:18px;text-shadow:0 1px 2px rgba(8,40,100,.5);transform-origin:0 0;
+ background:radial-gradient(circle at calc(100% - 20px) 17px,#fffdf0 0 3.4px,rgba(255,244,190,.9) 4.2px,rgba(255,229,140,.42) 8px,rgba(255,229,140,.12) 15px,rgba(255,229,140,0) 24px),
+  radial-gradient(110% 80% at 0% 0%,rgba(255,255,255,.14),transparent 60%),
+  linear-gradient(180deg,#2467d4 0%,#3b8aea 55%,#7ebffa 100%);
+ box-shadow:0 10px 22px -12px rgba(24,95,190,.9),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -8px 12px -10px rgba(20,80,170,.35);}
+html body #lnkChatModal .lc2-msg.me[data-fx="bau-troi-may"] .lc2-b,html body .lc-group.me[data-fx="bau-troi-may"] .lc-b{transform-origin:100% 0;}
+html body #lnkChatModal .lc2-msg.me[data-fx="bau-troi-may"] .lc2-b{border-radius:18px 4px 18px 18px;}
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"]:not(.me).first .lc2-b{border-radius:4px 18px 18px 18px;}
+html body .lc-group.me[data-fx="bau-troi-may"] .lc-b:first-of-type{border-top-right-radius:6px;}
+html body .lc-group.other[data-fx="bau-troi-may"] .lc-b:first-of-type{border-top-left-radius:6px;}
+html body #lnkChatModal .lc2-msg.me[data-fx="bau-troi-may"],html body #lnkChatModal .lc2-msg.me[data-fx="bau-troi-may"]:hover{background:transparent;box-shadow:none;}
+
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"] .lc2-b::before,html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"] .lc2-b::after,html body .lc-group[data-fx="bau-troi-may"] .lc-b::before,html body .lc-group[data-fx="bau-troi-may"] .lc-b::after{content:"";position:absolute;left:0;z-index:-1;width:calc(100% + 160px);pointer-events:none;background-repeat:repeat-x;transform:none;translate:none;animation:none;}
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"] .lc2-b::after,html body .lc-group[data-fx="bau-troi-may"] .lc-b::after{bottom:0;height:22px;background-image:var(--fx-f);background-size:150px 22px;}
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"] .lc2-b::before,html body .lc-group[data-fx="bau-troi-may"] .lc-b::before{bottom:0;height:22px;background-image:var(--fx-b);background-size:100px 22px;}
+/* Chuyển động chỉ chạy ở các tin mới nhất (nhẹ máy khi chat dài); hiệu ứng khi gửi chỉ ở tin cuối */
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"]:nth-last-child(-n+10) .lc2-b::after,html body .lc-group[data-fx="bau-troi-may"]:nth-last-child(-n+8) .lc-b::after{animation:btxDrift1 24s linear infinite;will-change:transform;}
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"]:nth-last-child(-n+10) .lc2-b::before,html body .lc-group[data-fx="bau-troi-may"]:nth-last-child(-n+8) .lc-b::before{animation:btxDrift2 38s linear infinite reverse;will-change:transform;}
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"]:last-child .lc2-b,html body .lc-group[data-fx="bau-troi-may"]:last-child .lc-b:nth-last-child(2){animation:btxPuff .85s cubic-bezier(.2,.8,.3,1) both;}
+@keyframes btxDrift1{to{transform:translateX(-150px);}}
+@keyframes btxDrift2{to{transform:translateX(-100px);}}
+@keyframes btxPuff{
+ 0%{transform:scale(.9);box-shadow:0 10px 22px -12px rgba(24,95,190,.9),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -8px 12px -10px rgba(20,80,170,.35),0 0 0 0 rgba(255,255,255,.95),0 0 0 0 rgba(190,225,255,.7);}
+ 55%{transform:scale(1.04);}
+ 100%{transform:scale(1);box-shadow:0 10px 22px -12px rgba(24,95,190,.9),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -8px 12px -10px rgba(20,80,170,.35),0 0 0 14px rgba(255,255,255,0),0 0 0 26px rgba(190,225,255,0);}}
+@media (prefers-reduced-motion:reduce){html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"] .lc2-b,html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"] .lc2-b::before,html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"] .lc2-b::after,html body .lc-group[data-fx="bau-troi-may"] .lc-b,html body .lc-group[data-fx="bau-troi-may"] .lc-b::before,html body .lc-group[data-fx="bau-troi-may"] .lc-b::after{animation:none !important;}}
+
+/* ===== v3 nâng cấp: mặt trời rực, chân trời ấm ===== */
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may"] .lc2-b,html body .lc-group[data-fx="bau-troi-may"] .lc-b{--bts:0 12px 24px -12px rgba(24,95,190,.95),0 0 20px -8px rgba(255,226,140,.55),inset 0 1px 0 rgba(255,255,255,.5);border-color:rgba(255,255,255,.45);background:radial-gradient(circle at calc(100% - 20px) 17px,#fffef2 0 3.6px,rgba(255,246,196,.95) 4.4px,rgba(255,229,140,.5) 9px,rgba(255,229,140,.16) 17px,rgba(255,229,140,0) 28px),radial-gradient(circle at 18% 112%,rgba(255,190,120,.35),transparent 55%),radial-gradient(110% 80% at 0 0,rgba(255,255,255,.18),transparent 60%),linear-gradient(180deg,#1c5fc9 0%,#3b8cee 50%,#86c6fb 82%,#c5e5ff 100%);box-shadow:var(--bts);}
+@keyframes btxPuff{0%{transform:scale(.9);box-shadow:var(--bts),0 0 0 0 rgba(255,255,255,.95),0 0 0 0 rgba(190,225,255,.7);}55%{transform:scale(1.04);}100%{transform:scale(1);box-shadow:var(--bts),0 0 0 14px rgba(255,255,255,0),0 0 0 26px rgba(190,225,255,0);}}
+</style>
+
+<style data-fx-id="bau-troi-may-khung">
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may-khung"] .lc2-b,html body .lc-group[data-fx="bau-troi-may-khung"] .lc-b{position:relative;overflow:visible;isolation:auto;display:block;width:fit-content;max-width:100%;padding:8px 14px;color:#fff;text-shadow:0 1px 1px rgba(10,50,110,.3);border:1px solid transparent;border-radius:18px;
+ background:radial-gradient(circle at 90% 112%,rgba(255,255,255,.34) 0 10px,transparent 11px),radial-gradient(circle at 79% 118%,rgba(255,255,255,.28) 0 9px,transparent 10px),radial-gradient(circle at 12% 116%,rgba(255,255,255,.2) 0 8px,transparent 9px),linear-gradient(135deg,#4ea3f2,#2a74d0);
+ box-shadow:0 10px 20px -12px rgba(24,95,190,.9);}
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may-khung"] .lc2-b::before,html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may-khung"] .lc2-b::after,html body .lc-group[data-fx="bau-troi-may-khung"] .lc-b::before,html body .lc-group[data-fx="bau-troi-may-khung"] .lc-b::after{content:none;animation:none;}
+html body #lnkChatModal .lc2-msg.me[data-fx="bau-troi-may-khung"] .lc2-b{border-radius:18px 4px 18px 18px;}
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may-khung"]:not(.me).first .lc2-b{border-radius:4px 18px 18px 18px;}
+html body .lc-group.me[data-fx="bau-troi-may-khung"] .lc-b:first-of-type{border-top-right-radius:6px;}
+html body .lc-group.other[data-fx="bau-troi-may-khung"] .lc-b:first-of-type{border-top-left-radius:6px;}
+html body #lnkChatModal .lc2-msg.me[data-fx="bau-troi-may-khung"],html body #lnkChatModal .lc2-msg.me[data-fx="bau-troi-may-khung"]:hover{background:transparent;box-shadow:none;}
+/* Làn mây toả ra một lần ở tin cuối */
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may-khung"]:last-child .lc2-b,html body .lc-group[data-fx="bau-troi-may-khung"]:last-child .lc-b:nth-last-child(2){animation:btxRing 1.2s ease-out 1;}
+@keyframes btxRing{0%{box-shadow:0 0 0 0 rgba(255,255,255,.85);}100%{box-shadow:0 0 0 12px rgba(255,255,255,0);}}
+@media (prefers-reduced-motion:reduce){html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may-khung"] .lc2-b,html body .lc-group[data-fx="bau-troi-may-khung"] .lc-b{animation:none !important;}}
+
+/* ===== v2 nâng cấp ===== */
+html body #lnkChatModal .lc2-msg[data-fx="bau-troi-may-khung"] .lc2-b,html body .lc-group[data-fx="bau-troi-may-khung"] .lc-b{border-color:rgba(255,255,255,.4);background:radial-gradient(circle at 92% 112%,rgba(255,255,255,.4) 0 10px,transparent 11px),radial-gradient(circle at 79% 118%,rgba(255,255,255,.32) 0 9px,transparent 10px),radial-gradient(circle at 12% 116%,rgba(255,255,255,.24) 0 8px,transparent 9px),radial-gradient(circle at 96% 6%,rgba(255,240,170,.55) 0 3px,rgba(255,240,170,.18) 9px,transparent 20px),linear-gradient(135deg,#5aaaf5,#2a74d0 60%,#1f5fb8);box-shadow:0 12px 22px -12px rgba(24,95,190,.95),inset 0 1px 0 rgba(255,255,255,.45);}
+</style>
+
+
+<style data-fx-id="mu-rom">
+[data-fx="mu-rom"]{--mrx-hat:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%27-6%20-4%2076%2056%27%3E%3Cg%20transform%3D%27rotate%289%2032%2040%29%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27t%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%270%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23fde08a%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23dca226%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cellipse%20cx%3D%2732%27%20cy%3D%2733%27%20rx%3D%2730%27%20ry%3D%279%27%20fill%3D%27url%28%23t%29%27%20stroke%3D%27%237a4e0e%27%20stroke-width%3D%272%27%2F%3E%3Cpath%20d%3D%27M32%2029c-9%200-18%201-27%205M32%2037c-10%200-20-1-28-4M32%2029v8%27%20fill%3D%27none%27%20stroke%3D%27%23b9831d%27%20stroke-width%3D%271%27%20opacity%3D%27.55%27%2F%3E%3Cpath%20d%3D%27M14.5%2032C12.6%2014%2021%204%2032%204s19.4%2010%2017.5%2028C41%2036%2023%2036%2014.5%2032Z%27%20fill%3D%27url%28%23t%29%27%20stroke%3D%27%237a4e0e%27%20stroke-width%3D%272%27%20stroke-linejoin%3D%27round%27%2F%3E%3Cpath%20d%3D%27M14.2%2025.4C24%2030.4%2040%2030.4%2049.8%2025.4L49.5%2032.6C40%2037.4%2024%2037.4%2014.5%2032.6Z%27%20fill%3D%27%23d7263d%27%20stroke%3D%27%236d0c18%27%20stroke-width%3D%271.8%27%20stroke-linejoin%3D%27round%27%2F%3E%3Cpath%20d%3D%27M22%2028.6l.4%206M32%2030v6.4M42%2028.6l-.4%206%27%20stroke%3D%27%23ff8c99%27%20stroke-width%3D%271%27%20opacity%3D%27.7%27%2F%3E%3Cpath%20d%3D%27M20%2012l-2%2010M27%208l-1.4%2012M35%207l1%2012M43%2010l2%2011%27%20stroke%3D%27%23b9831d%27%20stroke-width%3D%271.1%27%20stroke-linecap%3D%27round%27%20opacity%3D%27.65%27%2F%3E%3Cpath%20d%3D%27M23%209.5Q29%205.6%2037%206%27%20fill%3D%27none%27%20stroke%3D%27%23fff%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20opacity%3D%27.6%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");}
+[data-fx="mu-rom"]{--mrx-tl:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M36%2014H44%20V44%20H14V36A22%2022%200%200%201%2036%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%3E%3Ccircle%20cx='10'%20cy='36'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrx-tr:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M36%2014H44%20V44%20H14V36A22%2022%200%200%201%2036%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%20transform='translate%2844%200%29%20scale%28-1%201%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrx-bl:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M36%2014H44%20V44%20H14V36A22%2022%200%200%201%2036%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%20transform='translate%280%2044%29%20scale%281%20-1%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrx-br:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M36%2014H44%20V44%20H14V36A22%2022%200%200%201%2036%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%20transform='translate%2844%2044%29%20scale%28-1%20-1%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrx-tl6:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M20%2014H44%20V44%20H14V20A6%206%200%200%201%2020%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%3E%3Ccircle%20cx='10'%20cy='20'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='12.9'%20cy='12.9'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='29'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='10'%20cy='29'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='38'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='10'%20cy='38'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrx-tr6:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M20%2014H44%20V44%20H14V20A6%206%200%200%201%2020%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%20transform='translate%2844%200%29%20scale%28-1%201%29'%3E%3Ccircle%20cx='10'%20cy='20'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='12.9'%20cy='12.9'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='29'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='10'%20cy='29'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='38'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='10'%20cy='38'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrx-mtl:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%3E%3Ccircle%20cx='10'%20cy='36'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E");--mrx-mtr:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%20transform='translate%2844%200%29%20scale%28-1%201%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E");--mrx-mbl:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%20transform='translate%280%2044%29%20scale%281%20-1%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E");--mrx-mbr:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%20transform='translate%2844%2044%29%20scale%28-1%20-1%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E");--mrx-mtl6:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%3E%3Ccircle%20cx='10'%20cy='20'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='12.9'%20cy='12.9'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='29'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='10'%20cy='29'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='38'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='10'%20cy='38'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E");--mrx-mtr6:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%20transform='translate%2844%200%29%20scale%28-1%201%29'%3E%3Ccircle%20cx='10'%20cy='20'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='12.9'%20cy='12.9'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='29'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='10'%20cy='29'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='38'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='10'%20cy='38'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E")}
+/* ===== Mũ Rơm: bong bóng đỏ vest, mũ rơm đội ở góc trên bên phải, vòng mây trắng bao quanh tin nhắn ===== */
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom"] .lc2-b,html body .lc-group[data-fx="mu-rom"] .lc-b{position:relative;overflow:visible;isolation:auto;display:block;width:fit-content;max-width:100%;margin:19px 17px 21px;padding:9px 30px 10px 20px;color:#fff;text-shadow:0 1px 2px rgba(90,5,15,.75);border:3px solid #fff;border-radius:22px;
+ background:radial-gradient(120% 90% at 16% 0,rgba(255,255,255,.3),transparent 55%),linear-gradient(135deg,#ff6a7a,#e02b40 48%,#a3101f);
+ box-shadow:0 0 0 7px #fff,0 0 5px 7px rgba(120,160,225,.35),0 12px 22px -10px rgba(150,15,30,.85);}
+html body #lnkChatModal .lc2-msg.me[data-fx="mu-rom"] .lc2-b{border-radius:22px 6px 22px 22px;}
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom"]:not(.me).first .lc2-b{border-radius:6px 22px 22px 22px;}
+html body .lc-group.me[data-fx="mu-rom"] .lc-b:first-of-type{border-top-right-radius:6px;}
+html body .lc-group.other[data-fx="mu-rom"] .lc-b:first-of-type{border-top-left-radius:6px;}
+html body #lnkChatModal .lc2-msg.me[data-fx="mu-rom"],html body #lnkChatModal .lc2-msg.me[data-fx="mu-rom"]:hover{background:transparent;box-shadow:none;}
+/* ::before = chiếc mũ rơm ở góc trên bên phải; ::after = vòng mây bao quanh bong bóng (viền trắng liền do box-shadow, các cụm mây tròn trôi vòng quanh theo chiều kim đồng hồ) */
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom"] .lc2-b::before,html body .lc-group[data-fx="mu-rom"] .lc-b::before{content:"";position:absolute;z-index:3;pointer-events:none;left:-20px;right:-20px;top:-18px;bottom:-14px;
+ background:var(--mrx-hat) right 6px top -4px/54px 40px no-repeat;
+ border:0;opacity:1;animation:none;transform:none;filter:drop-shadow(0 2px 3px rgba(110,15,28,.25));}
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom"] .lc2-b::after,html body .lc-group[data-fx="mu-rom"] .lc-b::after{content:"";position:absolute;z-index:2;pointer-events:none;left:-17px;right:-17px;top:-17px;bottom:-17px;--mrx-ktl:var(--mrx-tl);--mrx-kmtl:var(--mrx-mtl);--mrx-ktr:var(--mrx-tr);--mrx-kmtr:var(--mrx-mtr);--mrx-kbl:var(--mrx-bl);--mrx-kmbl:var(--mrx-mbl);--mrx-kbr:var(--mrx-br);--mrx-kmbr:var(--mrx-mbr);
+ background:radial-gradient(circle 6px at 9px 10px,#fff 0,#fff 5.3px,rgba(255,255,255,0) 6px),radial-gradient(circle 4.5px at 9px 10px,#fff 0,#fff 3.8px,rgba(255,255,255,0) 4.5px),radial-gradient(circle 6px at 9px 4px,#fff 0,#fff 5.3px,rgba(255,255,255,0) 6px),radial-gradient(circle 4.5px at 9px 4px,#fff 0,#fff 3.8px,rgba(255,255,255,0) 4.5px),radial-gradient(circle 6px at 10px 9px,#fff 0,#fff 5.3px,rgba(255,255,255,0) 6px),radial-gradient(circle 4.5px at 10px 9px,#fff 0,#fff 3.8px,rgba(255,255,255,0) 4.5px),radial-gradient(circle 6px at 4px 9px,#fff 0,#fff 5.3px,rgba(255,255,255,0) 6px),radial-gradient(circle 4.5px at 4px 9px,#fff 0,#fff 3.8px,rgba(255,255,255,0) 4.5px),var(--mrx-ktl),var(--mrx-ktr),var(--mrx-kbl),var(--mrx-kbr);background-size:18px 14px,18px 14px,18px 14px,18px 14px,14px 18px,14px 18px,14px 18px,14px 18px,44px 44px,44px 44px,44px 44px,44px 44px;background-repeat:repeat-x,repeat-x,repeat-x,repeat-x,repeat-y,repeat-y,repeat-y,repeat-y,no-repeat,no-repeat,no-repeat,no-repeat;background-position:0 0,9px 0,0 100%,9px 100%,0 0,0 9px,100% 0,100% 9px,0 0,100% 0,0 100%,100% 100%;
+ -webkit-mask:linear-gradient(90deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 26px 0/calc(100% - 52px) 14px no-repeat,linear-gradient(90deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 26px 100%/calc(100% - 52px) 14px no-repeat,linear-gradient(180deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 0 26px/14px calc(100% - 52px) no-repeat,linear-gradient(180deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 100% 26px/14px calc(100% - 52px) no-repeat,var(--mrx-kmtl) 0 0/44px 44px no-repeat,var(--mrx-kmtr) 100% 0/44px 44px no-repeat,var(--mrx-kmbl) 0 100%/44px 44px no-repeat,var(--mrx-kmbr) 100% 100%/44px 44px no-repeat;mask:linear-gradient(90deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 26px 0/calc(100% - 52px) 14px no-repeat,linear-gradient(90deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 26px 100%/calc(100% - 52px) 14px no-repeat,linear-gradient(180deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 0 26px/14px calc(100% - 52px) no-repeat,linear-gradient(180deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 100% 26px/14px calc(100% - 52px) no-repeat,var(--mrx-kmtl) 0 0/44px 44px no-repeat,var(--mrx-kmtr) 100% 0/44px 44px no-repeat,var(--mrx-kmbl) 0 100%/44px 44px no-repeat,var(--mrx-kmbr) 100% 100%/44px 44px no-repeat;filter:drop-shadow(0 0 1.2px rgba(110,150,220,.55));border:0;opacity:1;animation:none;transform:none;}
+/* Cum may bo theo cung o 4 goc = hai dau trai/phai cua tin ngan, cung chi tiet voi dai may tren/duoi */
+html body #lnkChatModal .lc2-msg.me[data-fx="mu-rom"] .lc2-b::after,html body .lc-group.me[data-fx="mu-rom"] .lc-b:first-of-type::after{--mrx-ktr:var(--mrx-tr6);--mrx-kmtr:var(--mrx-mtr6);}
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom"]:not(.me).first .lc2-b::after,html body .lc-group.other[data-fx="mu-rom"] .lc-b:first-of-type::after{--mrx-ktl:var(--mrx-tl6);--mrx-kmtl:var(--mrx-mtl6);}
+/* Chuyển động chỉ chạy ở các tin mới nhất (nhẹ máy khi chat dài); giãn cao su chỉ ở tin cuối */
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom"]:nth-last-child(-n+10) .lc2-b::before,html body .lc-group[data-fx="mu-rom"]:nth-last-child(-n+8) .lc-b::before{animation:mrxHat 3s ease-in-out infinite;will-change:transform;}
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom"]:nth-last-child(-n+10) .lc2-b::after,html body .lc-group[data-fx="mu-rom"]:nth-last-child(-n+8) .lc-b::after{animation:mrxCloud 14s linear infinite;}
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom"]:last-child .lc2-b,html body .lc-group[data-fx="mu-rom"]:last-child .lc-b:nth-last-child(2){animation:mrxGum .8s cubic-bezier(.2,.8,.3,1) both;}
+@keyframes mrxHat{0%,100%{transform:translateY(0);}50%{transform:translateY(-2px);}}
+@keyframes mrxCloud{from{background-position:0 0,9px 0,0 100%,9px 100%,0 0,0 9px,100% 0,100% 9px,0 0,100% 0,0 100%,100% 100%;}to{background-position:18px 0,27px 0,-18px 100%,-9px 100%,0 -18px,0 -9px,100% 18px,100% 27px,0 0,100% 0,0 100%,100% 100%;}}
+@keyframes mrxGum{0%{transform:scale(.78,1.22);box-shadow:0 0 0 7px #fff,0 0 5px 7px rgba(120,160,225,.35),0 12px 22px -10px rgba(150,15,30,.85),0 0 0 0 rgba(255,255,255,.95);}30%{transform:scale(1.2,.86);}55%{transform:scale(.95,1.07);}100%{transform:scale(1);box-shadow:0 0 0 7px #fff,0 0 5px 7px rgba(120,160,225,.35),0 12px 22px -10px rgba(150,15,30,.85),0 0 0 0 rgba(255,255,255,0);}}
+@media (prefers-reduced-motion:reduce){html body #lnkChatModal .lc2-msg[data-fx="mu-rom"] .lc2-b,html body .lc-group[data-fx="mu-rom"] .lc-b,html body #lnkChatModal .lc2-msg[data-fx="mu-rom"] .lc2-b::before,html body .lc-group[data-fx="mu-rom"] .lc-b::before,html body #lnkChatModal .lc2-msg[data-fx="mu-rom"] .lc2-b::after,html body .lc-group[data-fx="mu-rom"] .lc-b::after{animation:none !important;}}
+
+/* ===== v12 nâng cấp: áo vest đỏ khâu chỉ vàng, quầng sáng vàng-trắng ===== */
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom"] .lc2-b,html body .lc-group[data-fx="mu-rom"] .lc-b{--mrs:inset 0 0 0 2px rgba(255,214,110,.6),0 0 0 7px #fff,0 0 5px 7px rgba(120,160,225,.35),0 0 26px 6px rgba(255,205,90,.5),0 12px 22px -10px rgba(150,15,30,.85);background:radial-gradient(120% 90% at 14% 0,rgba(255,255,255,.38),transparent 52%),repeating-linear-gradient(120deg,rgba(255,255,255,.05) 0 6px,transparent 6px 14px),radial-gradient(circle at 100% 100%,rgba(90,5,15,.35),transparent 55%),linear-gradient(135deg,#ff7a88,#e82f45 45%,#a50f20);box-shadow:var(--mrs);}
+@keyframes mrxGum{0%{transform:scale(.78,1.22);box-shadow:var(--mrs),0 0 0 0 rgba(255,255,255,.95);}30%{transform:scale(1.2,.86);}55%{transform:scale(.95,1.07);}100%{transform:scale(1);box-shadow:var(--mrs),0 0 0 18px rgba(255,255,255,0);}}
+</style>
+
+<style data-fx-id="mu-rom-khung">
+[data-fx="mu-rom-khung"]{--mrk-hat:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%27-6%20-4%2076%2056%27%3E%3Cg%20transform%3D%27rotate%289%2032%2040%29%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27t%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%270%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23fde08a%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23dca226%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cellipse%20cx%3D%2732%27%20cy%3D%2733%27%20rx%3D%2730%27%20ry%3D%279%27%20fill%3D%27url%28%23t%29%27%20stroke%3D%27%237a4e0e%27%20stroke-width%3D%272%27%2F%3E%3Cpath%20d%3D%27M32%2029c-9%200-18%201-27%205M32%2037c-10%200-20-1-28-4M32%2029v8%27%20fill%3D%27none%27%20stroke%3D%27%23b9831d%27%20stroke-width%3D%271%27%20opacity%3D%27.55%27%2F%3E%3Cpath%20d%3D%27M14.5%2032C12.6%2014%2021%204%2032%204s19.4%2010%2017.5%2028C41%2036%2023%2036%2014.5%2032Z%27%20fill%3D%27url%28%23t%29%27%20stroke%3D%27%237a4e0e%27%20stroke-width%3D%272%27%20stroke-linejoin%3D%27round%27%2F%3E%3Cpath%20d%3D%27M14.2%2025.4C24%2030.4%2040%2030.4%2049.8%2025.4L49.5%2032.6C40%2037.4%2024%2037.4%2014.5%2032.6Z%27%20fill%3D%27%23d7263d%27%20stroke%3D%27%236d0c18%27%20stroke-width%3D%271.8%27%20stroke-linejoin%3D%27round%27%2F%3E%3Cpath%20d%3D%27M22%2028.6l.4%206M32%2030v6.4M42%2028.6l-.4%206%27%20stroke%3D%27%23ff8c99%27%20stroke-width%3D%271%27%20opacity%3D%27.7%27%2F%3E%3Cpath%20d%3D%27M20%2012l-2%2010M27%208l-1.4%2012M35%207l1%2012M43%2010l2%2011%27%20stroke%3D%27%23b9831d%27%20stroke-width%3D%271.1%27%20stroke-linecap%3D%27round%27%20opacity%3D%27.65%27%2F%3E%3Cpath%20d%3D%27M23%209.5Q29%205.6%2037%206%27%20fill%3D%27none%27%20stroke%3D%27%23fff%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20opacity%3D%27.6%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");}
+[data-fx="mu-rom-khung"]{--mrk-tl:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M36%2014H44%20V44%20H14V36A22%2022%200%200%201%2036%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%3E%3Ccircle%20cx='10'%20cy='36'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrk-tr:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M36%2014H44%20V44%20H14V36A22%2022%200%200%201%2036%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%20transform='translate%2844%200%29%20scale%28-1%201%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrk-bl:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M36%2014H44%20V44%20H14V36A22%2022%200%200%201%2036%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%20transform='translate%280%2044%29%20scale%281%20-1%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrk-br:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M36%2014H44%20V44%20H14V36A22%2022%200%200%201%2036%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%20transform='translate%2844%2044%29%20scale%28-1%20-1%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrk-tl6:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M20%2014H44%20V44%20H14V20A6%206%200%200%201%2020%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%3E%3Ccircle%20cx='10'%20cy='20'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='12.9'%20cy='12.9'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='29'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='10'%20cy='29'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='38'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='10'%20cy='38'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrk-tr6:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cdefs%3E%3CradialGradient%20id='g'%3E%3Cstop%20offset='.88'%20stop-color='%23fff'/%3E%3Cstop%20offset='1'%20stop-color='%23fff'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3CclipPath%20id='k'%3E%3Cpath%20clip-rule='evenodd'%20d='M0%200H44%20V44%20H0Z%20M20%2014H44%20V44%20H14V20A6%206%200%200%201%2020%2014Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg%20transform='translate%2844%200%29%20scale%28-1%201%29'%3E%3Ccircle%20cx='10'%20cy='20'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='12.9'%20cy='12.9'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='20'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='29'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='10'%20cy='29'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='38'%20cy='10'%20r='6'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='10'%20cy='38'%20r='6'%20fill='url%28%23g%29'/%3E%3C/g%3E%3C/svg%3E");--mrk-mtl:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%3E%3Ccircle%20cx='10'%20cy='36'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E");--mrk-mtr:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%20transform='translate%2844%200%29%20scale%28-1%201%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E");--mrk-mbl:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%20transform='translate%280%2044%29%20scale%281%20-1%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E");--mrk-mbr:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%20transform='translate%2844%2044%29%20scale%28-1%20-1%29'%3E%3Ccircle%20cx='10'%20cy='36'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='11.3'%20cy='28'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='15'%20cy='20.7'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20.7'%20cy='15'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='28'%20cy='11.3'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='36'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E");--mrk-mtl6:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%3E%3Ccircle%20cx='10'%20cy='20'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='12.9'%20cy='12.9'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='29'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='10'%20cy='29'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='38'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='10'%20cy='38'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E");--mrk-mtr6:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2044%2044'%3E%3Cg%20transform='translate%2844%200%29%20scale%28-1%201%29'%3E%3Ccircle%20cx='10'%20cy='20'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='12.9'%20cy='12.9'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='20'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='29'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='10'%20cy='29'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='38'%20cy='10'%20r='6.3'%20fill='%23000'/%3E%3Ccircle%20cx='10'%20cy='38'%20r='6.3'%20fill='%23000'/%3E%3C/g%3E%3C/svg%3E")}
+/* ===== Mũ Rơm: bong bóng đỏ vest, mũ rơm đội ở góc trên bên phải, vòng mây trắng bao quanh tin nhắn ===== */
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"] .lc2-b,html body .lc-group[data-fx="mu-rom-khung"] .lc-b{position:relative;overflow:visible;isolation:auto;display:block;width:fit-content;max-width:100%;margin:19px 17px 21px;padding:9px 30px 10px 20px;color:#fff;text-shadow:0 1px 2px rgba(90,5,15,.75);border:3px solid #fff;border-radius:22px;
+ background:radial-gradient(120% 90% at 16% 0,rgba(255,255,255,.3),transparent 55%),linear-gradient(135deg,#ff6a7a,#e02b40 48%,#a3101f);
+ box-shadow:0 0 0 7px #fff,0 0 5px 7px rgba(120,160,225,.35),0 12px 22px -10px rgba(150,15,30,.85);}
+html body #lnkChatModal .lc2-msg.me[data-fx="mu-rom-khung"] .lc2-b{border-radius:22px 6px 22px 22px;}
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"]:not(.me).first .lc2-b{border-radius:6px 22px 22px 22px;}
+html body .lc-group.me[data-fx="mu-rom-khung"] .lc-b:first-of-type{border-top-right-radius:6px;}
+html body .lc-group.other[data-fx="mu-rom-khung"] .lc-b:first-of-type{border-top-left-radius:6px;}
+html body #lnkChatModal .lc2-msg.me[data-fx="mu-rom-khung"],html body #lnkChatModal .lc2-msg.me[data-fx="mu-rom-khung"]:hover{background:transparent;box-shadow:none;}
+/* ::before = chiếc mũ rơm ở góc trên bên phải; ::after = vòng mây bao quanh bong bóng (viền trắng liền do box-shadow, các cụm mây tròn trôi vòng quanh theo chiều kim đồng hồ) */
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"] .lc2-b::before,html body .lc-group[data-fx="mu-rom-khung"] .lc-b::before{content:"";position:absolute;z-index:3;pointer-events:none;left:-20px;right:-20px;top:-18px;bottom:-14px;
+ background:var(--mrk-hat) right 6px top -4px/54px 40px no-repeat;
+ border:0;opacity:1;animation:none;transform:none;filter:drop-shadow(0 2px 3px rgba(110,15,28,.25));}
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"] .lc2-b::after,html body .lc-group[data-fx="mu-rom-khung"] .lc-b::after{content:"";position:absolute;z-index:2;pointer-events:none;left:-17px;right:-17px;top:-17px;bottom:-17px;--mrk-ktl:var(--mrk-tl);--mrk-kmtl:var(--mrk-mtl);--mrk-ktr:var(--mrk-tr);--mrk-kmtr:var(--mrk-mtr);--mrk-kbl:var(--mrk-bl);--mrk-kmbl:var(--mrk-mbl);--mrk-kbr:var(--mrk-br);--mrk-kmbr:var(--mrk-mbr);
+ background:radial-gradient(circle 6px at 9px 10px,#fff 0,#fff 5.3px,rgba(255,255,255,0) 6px),radial-gradient(circle 4.5px at 9px 10px,#fff 0,#fff 3.8px,rgba(255,255,255,0) 4.5px),radial-gradient(circle 6px at 9px 4px,#fff 0,#fff 5.3px,rgba(255,255,255,0) 6px),radial-gradient(circle 4.5px at 9px 4px,#fff 0,#fff 3.8px,rgba(255,255,255,0) 4.5px),radial-gradient(circle 6px at 10px 9px,#fff 0,#fff 5.3px,rgba(255,255,255,0) 6px),radial-gradient(circle 4.5px at 10px 9px,#fff 0,#fff 3.8px,rgba(255,255,255,0) 4.5px),radial-gradient(circle 6px at 4px 9px,#fff 0,#fff 5.3px,rgba(255,255,255,0) 6px),radial-gradient(circle 4.5px at 4px 9px,#fff 0,#fff 3.8px,rgba(255,255,255,0) 4.5px),var(--mrk-ktl),var(--mrk-ktr),var(--mrk-kbl),var(--mrk-kbr);background-size:18px 14px,18px 14px,18px 14px,18px 14px,14px 18px,14px 18px,14px 18px,14px 18px,44px 44px,44px 44px,44px 44px,44px 44px;background-repeat:repeat-x,repeat-x,repeat-x,repeat-x,repeat-y,repeat-y,repeat-y,repeat-y,no-repeat,no-repeat,no-repeat,no-repeat;background-position:0 0,9px 0,0 100%,9px 100%,0 0,0 9px,100% 0,100% 9px,0 0,100% 0,0 100%,100% 100%;
+ -webkit-mask:linear-gradient(90deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 26px 0/calc(100% - 52px) 14px no-repeat,linear-gradient(90deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 26px 100%/calc(100% - 52px) 14px no-repeat,linear-gradient(180deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 0 26px/14px calc(100% - 52px) no-repeat,linear-gradient(180deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 100% 26px/14px calc(100% - 52px) no-repeat,var(--mrk-kmtl) 0 0/44px 44px no-repeat,var(--mrk-kmtr) 100% 0/44px 44px no-repeat,var(--mrk-kmbl) 0 100%/44px 44px no-repeat,var(--mrk-kmbr) 100% 100%/44px 44px no-repeat;mask:linear-gradient(90deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 26px 0/calc(100% - 52px) 14px no-repeat,linear-gradient(90deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 26px 100%/calc(100% - 52px) 14px no-repeat,linear-gradient(180deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 0 26px/14px calc(100% - 52px) no-repeat,linear-gradient(180deg,transparent,#000 10px,#000 calc(100% - 10px),transparent) 100% 26px/14px calc(100% - 52px) no-repeat,var(--mrk-kmtl) 0 0/44px 44px no-repeat,var(--mrk-kmtr) 100% 0/44px 44px no-repeat,var(--mrk-kmbl) 0 100%/44px 44px no-repeat,var(--mrk-kmbr) 100% 100%/44px 44px no-repeat;filter:drop-shadow(0 0 1.2px rgba(110,150,220,.55));border:0;opacity:1;animation:none;transform:none;}
+/* Cum may bo theo cung o 4 goc = hai dau trai/phai cua tin ngan, cung chi tiet voi dai may tren/duoi */
+html body #lnkChatModal .lc2-msg.me[data-fx="mu-rom-khung"] .lc2-b::after,html body .lc-group.me[data-fx="mu-rom-khung"] .lc-b:first-of-type::after{--mrk-ktr:var(--mrk-tr6);--mrk-kmtr:var(--mrk-mtr6);}
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"]:not(.me).first .lc2-b::after,html body .lc-group.other[data-fx="mu-rom-khung"] .lc-b:first-of-type::after{--mrk-ktl:var(--mrk-tl6);--mrk-kmtl:var(--mrk-mtl6);}
+/* Chuyển động chỉ chạy ở các tin mới nhất (nhẹ máy khi chat dài); giãn cao su chỉ ở tin cuối */
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"]:nth-last-child(-n+10) .lc2-b::before,html body .lc-group[data-fx="mu-rom-khung"]:nth-last-child(-n+8) .lc-b::before{animation:mrkHat 3s ease-in-out infinite;will-change:transform;}
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"]:nth-last-child(-n+10) .lc2-b::after,html body .lc-group[data-fx="mu-rom-khung"]:nth-last-child(-n+8) .lc-b::after{animation:mrkCloud 14s linear infinite;}
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"]:last-child .lc2-b,html body .lc-group[data-fx="mu-rom-khung"]:last-child .lc-b:nth-last-child(2){animation:mrkGum .8s cubic-bezier(.2,.8,.3,1) both;}
+@keyframes mrkHat{0%,100%{transform:translateY(0);}50%{transform:translateY(-2px);}}
+@keyframes mrkCloud{from{background-position:0 0,9px 0,0 100%,9px 100%,0 0,0 9px,100% 0,100% 9px,0 0,100% 0,0 100%,100% 100%;}to{background-position:18px 0,27px 0,-18px 100%,-9px 100%,0 -18px,0 -9px,100% 18px,100% 27px,0 0,100% 0,0 100%,100% 100%;}}
+@keyframes mrkGum{0%{transform:scale(.78,1.22);box-shadow:0 0 0 7px #fff,0 0 5px 7px rgba(120,160,225,.35),0 12px 22px -10px rgba(150,15,30,.85),0 0 0 0 rgba(255,255,255,.95);}30%{transform:scale(1.2,.86);}55%{transform:scale(.95,1.07);}100%{transform:scale(1);box-shadow:0 0 0 7px #fff,0 0 5px 7px rgba(120,160,225,.35),0 12px 22px -10px rgba(150,15,30,.85),0 0 0 0 rgba(255,255,255,0);}}
+@media (prefers-reduced-motion:reduce){html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"] .lc2-b,html body .lc-group[data-fx="mu-rom-khung"] .lc-b,html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"] .lc2-b::before,html body .lc-group[data-fx="mu-rom-khung"] .lc-b::before,html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"] .lc2-b::after,html body .lc-group[data-fx="mu-rom-khung"] .lc-b::after{animation:none !important;}}
+
+/* ===== v12 nâng cấp: áo vest đỏ khâu chỉ vàng, quầng sáng vàng-trắng ===== */
+html body #lnkChatModal .lc2-msg[data-fx="mu-rom-khung"] .lc2-b,html body .lc-group[data-fx="mu-rom-khung"] .lc-b{--mrs:inset 0 0 0 2px rgba(255,214,110,.6),0 0 0 7px #fff,0 0 5px 7px rgba(120,160,225,.35),0 0 26px 6px rgba(255,205,90,.5),0 12px 22px -10px rgba(150,15,30,.85);background:radial-gradient(120% 90% at 14% 0,rgba(255,255,255,.38),transparent 52%),repeating-linear-gradient(120deg,rgba(255,255,255,.05) 0 6px,transparent 6px 14px),radial-gradient(circle at 100% 100%,rgba(90,5,15,.35),transparent 55%),linear-gradient(135deg,#ff7a88,#e82f45 45%,#a50f20);box-shadow:var(--mrs);}
+@keyframes mrkGum{0%{transform:scale(.78,1.22);box-shadow:var(--mrs),0 0 0 0 rgba(255,255,255,.95);}30%{transform:scale(1.2,.86);}55%{transform:scale(.95,1.07);}100%{transform:scale(1);box-shadow:var(--mrs),0 0 0 18px rgba(255,255,255,0);}}
+</style>
+
+<!-- Chỉ dùng cho trang xem trước (index.html KHÔNG lấy khối này): khung cấu trúc tối thiểu giống index. -->
+<style id="preview-base">
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#ece9f5;color:#2a2547}
+body.embed{background:transparent}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 20px;background:#fff;border-bottom:1px solid #ddd6ee}
+.bar h1{font-size:16px;margin:0}.bar p{margin:0;font-size:12.5px;color:#6b6489;flex:1;min-width:220px}
+.bar select{padding:6px 10px;border:1px solid #cfc6e6;border-radius:8px;font:inherit}
+.stage{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;padding:24px 16px}
+body.embed .stage{padding:8px}
+.mock{width:min(520px,100%);height:540px;display:flex;flex-direction:column}
+.mock h2{margin:0 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#6b6489}
+body.embed .mock h2{display:none}
+body.embed .mock{height:calc(100vh - 16px)}
+/* Khung chat dưới đây mô phỏng giao diện MẶC ĐỊNH của index.html (theme chỉ đổi bong bóng tin nhắn) */
+.lnk-box{flex:1;min-height:0;display:flex;flex-direction:column;border-radius:28px;overflow:hidden;position:relative;background:#fff;box-shadow:0 20px 50px -24px rgba(24,16,58,.5)}
+.lnk-box header{display:flex;align-items:center;gap:12px;padding:16px 18px;position:relative;color:#fff;background:linear-gradient(120deg,#5b21b6,#7c3aed 60%,#8b5cf6)}
+.hd-ic{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(145deg,#fbbf24,#f97316);color:#2a1205}.hd-ic svg{width:20px;height:20px;fill:currentColor}
+.hd-tx{flex:1;min-width:0}.hd-tx h3{margin:0;font-size:16px}.hd-tx small{display:block;font-size:12px;color:#ddd6fe}
+.lnk-box header button{width:34px;height:34px;border:0;cursor:pointer;font-size:15px;border-radius:11px;background:rgba(255,255,255,.18);color:#fff}
+.lc3-wrap{flex:1;min-height:0;display:flex}
+.lc3-main{flex:1;min-width:0;display:flex;flex-direction:column;background:#fff}
+.lc3-listwrap{position:relative;flex:1;min-height:0;display:flex}
+#lnkChatList{flex:1;min-width:0;display:flex;flex-direction:column;overflow:auto;padding:8px 0 12px}
+.lc2-day{display:flex;align-items:center;gap:12px;margin:18px 18px 6px;font-size:11.5px;font-weight:700;color:#9a90bb}
+.lc2-day::before,.lc2-day::after{content:"";flex:1;height:1px;background:#eee8fb}
+.lc2-msg{--h:262;position:relative;display:flex;gap:12px;padding:1px 56px 1px 18px}
+.lc2-msg.first{margin-top:12px;padding-top:4px}
+.lc2-msg.me{background:#fcfaff;box-shadow:inset 3px 0 0 #c4b5fd}
+.lc2-gut{flex:0 0 38px;width:38px;display:flex;justify-content:center}
+.lc2-av{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;background:hsl(var(--h) 52% 46%)}
+.lc2-gt{padding-top:5px;font-size:10.5px;color:#b3aacc;opacity:0}.lc2-msg:hover .lc2-gt{opacity:1}
+.lc2-col{flex:1;min-width:0}.lc2-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+.lc2-name{font-size:14px;font-weight:800;color:hsl(var(--h) 48% 33%)}.lc2-tag{font-size:10.5px;font-weight:800;padding:3px 7px;border-radius:6px;background:#ede9fe;color:#6d28d9}.lc2-meta time{font-size:11.5px;color:#a49cc2}
+.lc2-b{font-size:14.5px;line-height:1.55;color:#2a2547;white-space:pre-wrap;overflow-wrap:anywhere}
+.lc2-flag{position:absolute;right:16px;top:4px;border:0;border-radius:9px;padding:5px 7px;opacity:0;font-size:12px;background:#fff}.lc2-msg:hover .lc2-flag{opacity:1}
+.lc2-foot{padding:10px 16px 12px;background:#fff}
+.lc2-compose{display:flex;align-items:flex-end;gap:8px;padding:6px 6px 6px 16px;background:#f5f2fc;border:1.5px solid #e8e1f8;border-radius:18px}
+.lc2-compose textarea{flex:1;min-width:0;min-height:34px;margin:0;padding:8px 0;border:0;background:transparent;resize:none;outline:none;font:500 14.5px inherit;color:#241e45}
+.lc2-count{padding-bottom:11px;font-size:10.5px;color:#b3aacc}
+.lc2-send{width:40px;height:40px;border:0;cursor:pointer;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#fbbf24,#f97316);color:#2a1205}.lc2-send svg{width:19px;height:19px;fill:currentColor}
+.lc2-hint{margin-top:6px;padding-left:8px;font-size:11.5px;color:#a49cc2}
+.lobby-wrap{flex:1;min-height:0;display:flex;flex-direction:column;border-radius:28px;overflow:hidden;background:#fff;padding-bottom:12px;box-shadow:0 20px 50px -24px rgba(24,16,58,.5)}
+.lobby-log-panel{flex:1;min-height:0;overflow:auto;background:linear-gradient(180deg,#fff,#fbf8ff)}
+.lc-head{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(255,255,255,.94);border-bottom:1px solid #f0e6ff}
+.lc-title{display:inline-flex;align-items:center;gap:9px;font-weight:900;font-size:12.5px;letter-spacing:1.2px;text-transform:uppercase;color:#5b21b6}
+.lc-dot{width:9px;height:9px;border-radius:50%;background:#22c55e}.lc-sub{font-size:12px;font-weight:700;color:#94a3b8}
+.lc-list{padding:16px;display:flex;flex-direction:column;gap:10px}
+.lc-sys{align-self:flex-start;display:inline-flex;gap:8px;padding:6px 13px;border-radius:999px;font-size:12px;font-weight:600;background:#f5f3ff;color:#5b21b6}.lc-sys time{font-size:10.5px;font-weight:800;color:#a78bfa}
+.lc-group{display:flex;gap:10px;align-items:flex-end;max-width:90%}.lc-group.me{align-self:flex-end;flex-direction:row-reverse}
+.lc-av{--h:262;flex:0 0 40px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;margin-bottom:17px;background:hsl(var(--h) 62% 52%)}
+.lc-col{display:flex;flex-direction:column;gap:3px;min-width:0}.lc-group.me .lc-col{align-items:flex-end}
+.lc-name{font-size:11.5px;font-weight:800;padding-left:4px;color:#6d28d9}
+.lc-b{padding:9px 14px;border-radius:18px;border:1px solid #efe7ff;font-size:14px;background:#fff;color:#1e1b3a}
+.lc-group.other .lc-b:first-of-type{border-top-left-radius:6px}.lc-group.me .lc-b:first-of-type{border-top-right-radius:6px}
+.lc-group.me .lc-b{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;border-color:transparent}
+.lc-col time{font-size:10.5px;font-weight:700;padding:0 4px;color:#a89bc9}
+.lobby-chat-input-row{display:flex;align-items:center;gap:10px;margin:0 12px;padding:6px 6px 6px 18px;background:#fff;border:1.5px solid #e9ddff;border-radius:20px}
+.lobby-chat-input-row input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;padding:8px 4px}
+.lobby-chat-input-row .icon-btn{width:42px;height:42px;border:0;cursor:pointer;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff}
+</style>
+</head>
+<body>
+<div class="bar" id="bar">
+  <h1>🎨 Giao diện</h1>
+  <p id="themeDesc"></p>
+  <label>Toàn khung chat: <select id="themeSelFrame"></select></label>
+  <label>Bong bóng tin nhắn: <select id="themeSelBubble"></select></label>
+</div>
+<div class="stage">
+  <div class="mock" id="mockModal"><h2>Trò chuyện chung</h2>
+    <div id="lnkChatModal"><div class="lnk-box lnk-chat" style="height:100%">
+      <header><div class="hd-ic"><svg viewBox="0 0 24 24"><path d="M5 3h14a3 3 0 013 3v8a3 3 0 01-3 3h-6.2l-4.6 3.8a.7.7 0 01-1.2-.5V17H5a3 3 0 01-3-3V6a3 3 0 013-3z"/></svg></div><div class="hd-tx"><h3>Trò chuyện chung</h3><small>3 người đang trực tuyến</small></div><button type="button" tabindex="-1">✕</button></header>
+      <div class="lc3-wrap single"><div class="lc3-main">
+        <div class="lc3-listwrap"><div class="lnk-body lc2-body" id="lnkChatList">
+          <div class="lc2-day">Hôm nay</div>
+          <div class="lc2-msg other first last" style="--h:40"><div class="lc2-gut"><div class="lc2-av">M</div></div><div class="lc2-col"><div class="lc2-meta"><span class="lc2-name">Minh Anh</span><time>08:12</time></div><div class="lc2-b">Chào cả nhà! Tối nay ai luyện Tăng tốc không? 🌊</div></div><button class="lc2-flag" tabindex="-1">🚩</button></div>
+          <div class="lc2-msg other" style="--h:40"><div class="lc2-gut"><time class="lc2-gt">08:13</time></div><div class="lc2-col"><div class="lc2-b">Mình mở phòng lúc 8 giờ nhé.</div></div></div>
+          <div class="lc2-msg other first last" style="--h:210"><div class="lc2-gut"><div class="lc2-av">H</div></div><div class="lc2-col"><div class="lc2-meta"><span class="lc2-name">Hải Đăng</span><time>08:15</time></div><div class="lc2-b">Tham gia! Mình vừa nạp đề Giải phẫu mới.</div></div><button class="lc2-flag" tabindex="-1">🚩</button></div>
+          <div class="lc2-msg me first last" style="--h:120"><div class="lc2-gut"><div class="lc2-av">B</div></div><div class="lc2-col"><div class="lc2-meta"><span class="lc2-name">Bạn</span><span class="lc2-tag">Bạn</span><time>08:16</time></div><div class="lc2-b">Tuyệt vời, hẹn mọi người trong phòng!</div></div></div>
+        </div></div>
+        <div class="lnk-foot lc2-foot"><div class="lc2-compose"><textarea id="mockInput" rows="1" placeholder="Nhập tin nhắn…" maxlength="500"></textarea><span class="lc2-count">0/500</span><button class="lc2-send" id="mockSend" type="button" aria-label="Gửi"><svg viewBox="0 0 24 24"><path d="M3.4 20.4l17.45-7.48a1 1 0 000-1.84L3.4 3.6a.993.993 0 00-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87.99l.01 4.61c0 .71.73 1.2 1.39.92z"/></svg></button></div><div class="lc2-hint">Enter để gửi · Shift + Enter xuống dòng</div></div>
+      </div></div>
+    </div></div>
+  </div>
+  <div class="mock" id="mockLobby"><h2>Chat phòng chờ</h2>
+    <div class="lobby-wrap">
+      <div class="lobby-log-panel"><div class="lc-head"><span class="lc-title"><span class="lc-dot"></span>Trò chuyện phòng chờ</span><span class="lc-sub">3 tin nhắn</span></div>
+        <div class="lc-list" id="lobbyList">
+          <div class="lc-sys"><span>Hải Đăng đã vào phòng</span><time>08:14</time></div>
+          <div class="lc-group other"><div class="lc-av" style="--h:210">H</div><div class="lc-col"><div class="lc-name">Hải Đăng</div><div class="lc-b">Sẵn sàng chưa mọi người?</div><div class="lc-b">Mình đã chuẩn bị xong.</div><time>08:15</time></div></div>
+          <div class="lc-group me"><div class="lc-col"><div class="lc-b">Sẵn sàng! Bắt đầu thôi 🚀</div><time>08:16</time></div></div>
+        </div></div>
+      <div class="lobby-chat-input-row"><input type="text" id="mockLobbyInput" placeholder="Nhập tin nhắn và nhấn Enter" maxlength="300"><button class="icon-btn" id="mockLobbySend" type="button"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3.4 20.4l17.45-7.48a1 1 0 000-1.84L3.4 3.6a.993.993 0 00-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87.99l.01 4.61c0 .71.73 1.2 1.39.92z"/></svg></button></div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var reg=[]; try{reg=JSON.parse(document.getElementById("theme-registry").textContent);}catch(e){}
+  var q=new URLSearchParams(location.search), selF=document.getElementById("themeSelFrame"), selB=document.getElementById("themeSelBubble");
+  if(q.get("embed")){ document.body.classList.add("embed"); document.getElementById("bar").style.display="none"; }
+  var view=q.get("view"); if(view==="modal") document.getElementById("mockLobby").style.display="none"; if(view==="lobby") document.getElementById("mockModal").style.display="none";
+  function grp(t){ if(t.group==="bubble"||t.group==="frame") return t.group; return /bóng|bubble/i.test(t.scope||"")?"bubble":"frame"; }
+  var sels={frame:selF,bubble:selB};
+  [selF,selB].forEach(function(sl){ var o=document.createElement("option"); o.value=""; o.textContent="— Không dùng —"; sl.appendChild(o); });
+  reg.forEach(function(t){ var o=document.createElement("option"); o.value=t.id; o.textContent=t.name; sels[grp(t)].appendChild(o); });
+  function byId(id){ return reg.filter(function(x){return x.id===id;})[0]; }
+  // Tin của "Bạn" mang MỘT hiệu ứng: bong bóng nếu có, không thì khung (giống index.html)
+  function curFx(){ return selB.value||selF.value||""; }
+  function set(){
+    var ids=[selF.value,selB.value].filter(Boolean);
+    document.documentElement.setAttribute("data-chat-theme",ids.join(" "));
+    document.querySelectorAll(".lc2-msg.me,.lc-group.me").forEach(function(e){ if(curFx()) e.setAttribute("data-fx",curFx()); else e.removeAttribute("data-fx"); });
+    document.getElementById("themeDesc").textContent=ids.length
+      ? ids.map(function(i){ var t=byId(i); return t?t.name:i; }).join(" + ")+" — "+ids.map(function(i){ var t=byId(i); return t?t.desc:""; }).filter(Boolean)[0]+" (Xem trước. Quyền sử dụng do admin cấp.)"
+      : "Không dùng giao diện nào (mặc định của web).";
+  }
+  [q.get("theme"),q.get("theme2")].forEach(function(id){ var t=id&&byId(id); if(t) sels[grp(t)].value=t.id; });
+  if(!q.get("theme")&&reg[0]) sels[grp(reg[0])].value=reg[0].id;
+  selF.addEventListener("change",set); selB.addEventListener("change",set); set();
+  function mkMe(text){ var d=document.createElement("div"); d.className="lc2-msg me first last"; d.style.setProperty("--h","120"); if(curFx()) d.setAttribute("data-fx",curFx());
+    d.innerHTML='<div class="lc2-gut"><div class="lc2-av">B</div></div><div class="lc2-col"><div class="lc2-meta"><span class="lc2-name">Bạn</span><span class="lc2-tag">Bạn</span><time>vừa xong</time></div><div class="lc2-b"></div></div>';
+    d.querySelector(".lc2-b").textContent=text; return d; }
+  function send(){ var i=document.getElementById("mockInput"), v=i.value.trim(); if(!v) return; var l=document.getElementById("lnkChatList"); l.appendChild(mkMe(v)); l.scrollTop=l.scrollHeight; i.value=""; }
+  document.getElementById("mockSend").addEventListener("click",send);
+  document.getElementById("mockInput").addEventListener("keydown",function(e){ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();} });
+  function sendL(){ var i=document.getElementById("mockLobbyInput"), v=i.value.trim(); if(!v) return; var d=document.createElement("div"); d.className="lc-group me"; if(curFx()) d.setAttribute("data-fx",curFx()); d.innerHTML='<div class="lc-col"><div class="lc-b"></div><time>vừa xong</time></div>'; d.querySelector(".lc-b").textContent=v; document.getElementById("lobbyList").appendChild(d); i.value=""; }
+  document.getElementById("mockLobbySend").addEventListener("click",sendL);
+  document.getElementById("mockLobbyInput").addEventListener("keydown",function(e){ if(e.key==="Enter") sendL(); });
+})();
+</script>
+</body>
+</html>
