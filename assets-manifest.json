@@ -1,0 +1,17 @@
+{
+ "assets": [
+  {"u":"auth-logo.jpg","n":"Logo đăng nhập","v":"a455e5f8fb","s":42858},
+  {"u":"banner-ngay-le.html","n":"Banner ngày lễ","v":"4a4cc84b9e","s":1008934},
+  {"u":"favicon.png","n":"Biểu tượng","v":"e00bdea8bd","s":74644},
+  {"u":"giaodien.html","n":"Hiệu ứng tin nhắn & giao diện","v":"51e4e7375b","s":630753},
+  {"u":"hero.jpg","n":"Ảnh bìa","v":"49d4488199","s":118264},
+  {"u":"huyhieu.html","n":"Huy hiệu","v":"7839ad9adc","s":155659},
+  {"u":"logo.jpg","n":"Logo","v":"2a33cecb53","s":14688},
+  {"u":"nganhang.js","n":"Ngân hàng câu hỏi","v":"2f38bc0be9","s":25146},
+  {"u":"ranked-hero-bg.webp","n":"Ảnh đấu hạng","v":"9ad3dccd17","s":180156},
+  {"u":"vendor/jszip-3.10.1.min.js","n":"Thư viện nén file","v":"acc7e41455","s":97630},
+  {"u":"vendor/mammoth-1.12.2.browser.min.js","n":"Thư viện mammoth","v":"e660d427dd","s":636579},
+  {"u":"vendor/supabase-js-2.117.2.umd.js","n":"Thư viện kết nối","v":"59d39487c3","s":217945},
+  {"u":"vendor/xlsx-0.18.5.full.min.js","n":"Thư viện đọc Excel","v":"c9506197ca","s":881727}
+ ]
+}
