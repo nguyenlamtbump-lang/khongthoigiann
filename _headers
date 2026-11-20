@@ -1,0 +1,29 @@
+# _headers — đặt cạnh index.html trong thư mục tài sản của Cloudflare Workers (web chính).
+# Chỉ thêm tiêu đề cache / gợi ý tải sớm; không đổi nội dung file nào.
+# Lưu ý: mỗi đường dẫn bên dưới KHÔNG chồng nhau, vì Cloudflare nối (không ghi đè) cùng một tiêu đề từ nhiều khối khớp.
+
+# Trang HTML: luôn hỏi lại (304 rất nhẹ) để bản mới ra là người dùng thấy ngay; kèm gợi ý kết nối sớm (Early Hints).
+/
+  Link: <https://xaajtrmlwzqhzrgdanjy.supabase.co>; rel=preconnect; crossorigin
+  Link: <https://olympia-cdn.nguyenlam-tbump.workers.dev>; rel=preconnect; crossorigin
+  Link: <https://fonts.gstatic.com>; rel=preconnect; crossorigin
+  Link: </auth-logo.jpg>; rel=preload; as=image
+  X-Content-Type-Options: nosniff
+/index.html
+  Link: <https://xaajtrmlwzqhzrgdanjy.supabase.co>; rel=preconnect; crossorigin
+  Link: <https://olympia-cdn.nguyenlam-tbump.workers.dev>; rel=preconnect; crossorigin
+  Link: <https://fonts.gstatic.com>; rel=preconnect; crossorigin
+  Link: </auth-logo.jpg>; rel=preload; as=image
+  X-Content-Type-Options: nosniff
+
+# Thư viện có số phiên bản trong tên file (supabase-js-2.117.2...): không bao giờ đổi nội dung -> cache 1 năm.
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Ảnh/biểu tượng tên cố định: dùng ngay từ cache, làm mới ở nền (đổi ảnh -> người dùng thấy ở lần tải sau).
+/*.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/*.jpg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/*.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
